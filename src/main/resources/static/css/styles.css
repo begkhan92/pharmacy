@@ -1,0 +1,95 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f0f8ff;
+    color: #333;
+    margin: 20px;
+    padding: 20px;
+}
+
+h1 {
+    color: #1e3a8a;
+    text-align: center;
+}
+
+form {
+    background: #e0f2fe;
+    padding: 15px;
+    border-radius: 8px;
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+label {
+    font-weight: bold;
+}
+
+input, select {
+    padding: 8px;
+    border: 1px solid #93c5fd;
+    border-radius: 5px;
+}
+
+button {
+    background-color: #1e40af;
+    color: white;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+button:hover {
+    background-color: #1e3a8a;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    background: white;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+th, td {
+    border: 1px solid #93c5fd;
+    padding: 10px;
+    text-align: left;
+}
+
+th {
+    background: #1e3a8a;
+    color: white;
+}
+
+tbody tr:nth-child(even) {
+    background: #e0f2fe;
+}
+
+tbody tr:hover {
+    background: #bfdbfe;
+}
+
+a {
+    display: block;
+    text-align: center;
+    margin-top: 20px;
+    text-decoration: none;
+    font-weight: bold;
+    color: #1e40af;
+    background: #e0f2fe;
+    padding: 10px;
+    border-radius: 5px;
+    width: fit-content;
+    margin-left: auto;
+    margin-right: auto;
+    transition: 0.3s;
+}
+
+a:hover {
+    background: #1e3a8a;
+    color: white;
+}

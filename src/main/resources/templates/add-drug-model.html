@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="eng">
+<head>
+  <title>Derman goşmak</title>
+  <link rel="stylesheet" type="text/css" th:href="@{/css/styles.css}">
+</head>
+<body>
+<h1>Derman Goşmak</h1>
+<form th:action="@{/drug-models/save}" th:object="${drugModel}" method="post">
+  <label>Ady, Dozasy: <input type="text" th:field="*{nameDose}" /></label><br>
+  <button type="submit">Ok</button>
+</form>
+</body>
+</html>

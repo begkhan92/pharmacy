@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="eng">
+<head>
+  <title>Dermanlar</title>
+  <link rel="stylesheet" type="text/css" th:href="@{/css/styles.css}">
+</head>
+<body>
+<h1>Dermanlar</h1>
+<form th:action="@{/drugs}" method="get">
+  <label>Ady: <input type="text" name="name" /></label>
+  <label>Öndüriji: <input type="text" name="manufacturer" /></label>
+  <label>Ýapyldy:
+    <select name="isClosed">
+      <option value="">-</option>
+      <option value="true">Hawa</option>
+      <option value="false">Ýok</option>
+    </select>
+  </label>
+  <button type="submit">Filter</button>
+</form>
+
+<table>
+  <thead>
+  <tr>
+    <th>Ady</th>
+    <th>Dozasy</th>
+    <th>Öndüriji</th>
+    <th>Mukdary</th>
+    <th>Kontrakt</th>
+    <th>Gelen senesi</th>
+    <th>Balans</th>
+    <th>Akt</th>
+    <th>Öndürilen senesi</th>
+    <th>Seriýa Nomer</th>
+    <th>Bahasy</th>
+    <th>Ýayldy</th>
+  </tr>
+  </thead>
+  <tbody>
+  <tr th:each="drug : ${drugs}">
+    <td th:text="${drug.name}"></td>
+    <td th:text="${drug.dose}"></td>
+    <td th:text="${drug.manufacturer}"></td>
+    <td th:text="${drug.quantity}"></td>
+    <td th:text="${drug.contractNumber}"></td>
+    <td th:text="${drug.dateOfReceipt}"></td>
+    <td th:text="${drug.balance}"></td>
+    <td th:text="${drug.act}"></td>
+    <td th:text="${drug.productionDate}"></td>
+    <td th:text="${drug.seriesNumber}"></td>
+    <td th:text="${drug.price}"></td>
+    <td th:text="${drug.isClosed ? 'Yes' : 'No'}"></td>
+  </tr>
+  </tbody>
+</table>
+<a th:href="@{/drugs/add}">Derman goşmak</a>
+</body>
+</html>
