@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="eng">
+<head>
+  <title>Dermanlar</title>
+  <link rel="stylesheet" type="text/css" th:href="@{/css/styles.css}">
+  <script>
+        function toggleMenu(event, id) {
+            event.stopPropagation(); // Prevent event from bubbling
+            let menu = document.getElementById("menu-" + id);
+
+            // Close all other menus
+            document.querySelectorAll('.dropdown-menu').forEach(menu => {
+                menu.classList.remove('show');
+            });
+
+            // Toggle the clicked menu
+            if (menu) {
+                menu.classList.toggle("show");
+            }
+        }
+
+        window.onclick = function() {
+            document.querySelectorAll('.dropdown-menu').forEach(menu => {
+                menu.classList.remove('show');
+            });
+        };
+    </script>
+  <style>
+        .action-container {
+            position: relative;
+            display: inline-block;
+        }
+
+        .menu-icon {
+            cursor: pointer;
+            font-size: 20px;
+            padding: 5px;
+        }
+
+        .dropdown-menu {
+            display: none;
+            position: absolute;
+            right: 0;
+            background: white;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+            padding: 5px;
+            z-index: 10;
+            min-width: 100px;
+        }
+
+        .dropdown-menu a {
+            display: block;
+            padding: 5px 5px;
+            text-decoration: none;
+            color: black;
+        }
+
+        .dropdown-menu a:hover {
+            background: #f0f0f0;
+        }
+
+        .show {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+
+<form th:action="@{/drugs}" method="get">
+  <label>Ady: <input type="text" name="name" /></label>
+  <label>Öndüriji: <input type="text" name="manufacturer" /></label>
+  <label>Ýapyldy:
+    <select name="isClosed">
+      <option value="">-</option>
+      <option value="true">Hawa</option>
+      <option value="false">Ýok</option>
+    </select>
+  </label>
+  <button type="submit">Filter</button>
+</form>
+
+<table>
+  <thead>
+  <tr>
+    <th>Ady, dozasy</th>
+<!--    <th>Dozasy</th>-->
+    <th>Öndüriji</th>
+    <th>Mukdary</th>
+    <th>Kontrakt</th>
+    <th>Gelen senesi</th>
+    <th>Balans</th>
+    <th>Akt</th>
+    <th>Öndürilen senesi</th>
+    <th>Seriýa Nomer</th>
+    <th>Bahasy</th>
+    <th>Ýapyldy</th>
+    <th>Amallar</th>
+  </tr>
+  </thead>
+  <tbody>
+  <tr th:each="drug : ${drugs}">
+    <td th:text="${drug.name} + ', ' + ${drug.dose}+'ml'"></td>
+<!--    <td th:text="${drug.dose}"></td>-->
+    <td th:text="${drug.manufacturer}"></td>
+    <td th:text="${drug.quantity}"></td>
+    <td th:text="${drug.contractNumber}"></td>
+    <td th:text="${drug.dateOfReceipt}"></td>
+    <td th:text="${drug.balance}"></td>
+    <td th:text="${drug.act}"></td>
+    <td th:text="${drug.productionDate}"></td>
+    <td th:text="${drug.seriesNumber}"></td>
+    <td th:text="${drug.price}"></td>
+    <td th:text="${drug.isClosed ? 'Hawa' : 'Ýok'}"></td>
+    <td>
+      <div class="action-container">
+        <span class="menu-icon" th:attr="onclick=|toggleMenu(event, '${drug.id}')|">&#8942;</span>
+        <div th:id="'menu-' + ${drug.id}" class="dropdown-menu">
+          <a th:href="@{/drugs/edit/{id}(id=${drug.id})}">Üýtget</a>
+          <a th:href="@{/drugs/delete/{id}(id=${drug.id})}" onclick="return confirm('Siz hakykatdanam pozmak isleýärsiňizmi?');">
+            Poz
+          </a>
+        </div>
+      </div>
+    </td>
+  </tr>
+  </tbody>
+</table>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+
+<a th:href="@{/drugs/add}" class="add-drug-btn">Derman goşmak</a>
+
+
+</body>
+</html>

@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="eng">
+<head>
+    <title>Firma goşmak</title>
+    <link rel="stylesheet" type="text/css" th:href="@{/css/styles.css}">
+</head>
+<body>
+<h1>Firma Goşmak</h1>
+<form th:action="@{/firma/save}" th:object="${firma}" method="post">
+    <label>Ady: <input type="text" th:field="*{name}" /></label><br>
+    <label>Ýurdy: <input type="text" th:field="*{country}" /></label><br>
+    <button type="submit">Ok</button>
+</form>
+</body>
+</html>
