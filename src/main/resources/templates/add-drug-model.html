@@ -8,15 +8,7 @@
 <h1>Derman Goşmak</h1>
 <form th:action="@{/drug-models/save}" th:object="${drugModel}" method="post">
   <label>Ady, Dozasy: <input type="text" th:field="*{nameDose}" /></label><br>
-  <label>Firma:
-    <select th:field="*{firma}">
-      <option value="">Select a Firma</option>
-      <option th:each="firma : ${firmas}"
-              th:value="${firma}"
-              th:text="${firma.name}">
-      </option>
-    </select>
-  </label><br>
+  <label>Производитель: <input type="text" th:field="*{firma}" /></label><br>
 
   <button type="submit">Ok</button>
 </form>

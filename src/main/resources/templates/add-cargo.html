@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="eng">
+<head>
+    <title>Ýük goşmak</title>
+    <link rel="stylesheet" type="text/css" th:href="@{/css/styles.css}">
+</head>
+<body>
+<h1>Ýük goşmak</h1>
+<form th:action="@{/cargo/save}" th:object="${cargo}" method="post">
+    <label>Akt Nomer: <input type="text" th:field="*{actNumber}" /></label><br>
+    <label>Maşynlaryň sany: <input type="number" th:field="*{numberOftransport}" /></label><br>
+    <label>CMR Nomer: <input type="text" th:field="*{CMRNumber}" /></label><br>
+    <button type="submit">Ok</button>
+</form>
+</body>
+</html>

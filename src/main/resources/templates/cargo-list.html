@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="eng">
+<head>
+    <title>Dermanlar</title>
+    <link rel="stylesheet" type="text/css" th:href="@{/css/styles.css}">
+</head>
+<body>
+<h1>Ýükler</h1>
+
+<table>
+    <thead>
+    <tr>
+        <th>Akt Nomer</th>
+        <th>Maşynlaryň sany</th>
+        <th>CMR Nomer</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="cargo : ${cargos}">
+        <td>
+            <a th:href="@{/drugs(cargoId=${cargo.id})}" th:text="${cargo.actNumber}"></a>
+        </td>
+        <td th:text="${cargo.numberOftransport}"></td>
+        <td th:text="${cargo.CMRNumber}"></td>
+    </tr>
+
+    </tbody>
+</table>
+<a th:href="@{/cargo/add-drugs}" class="add-drug-btn">Ýük goşmak</a>
+</body>
+</html>

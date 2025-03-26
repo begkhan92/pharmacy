@@ -70,7 +70,7 @@
 
 <form th:action="@{/drugs}" method="get">
   <label>Ady: <input type="text" name="name" /></label>
-  <label>Öndüriji: <input type="text" name="manufacturer" /></label>
+  <label>Öndüriji: <input type="text" name="firma" /></label>
   <label>Ýapyldy:
     <select name="isClosed">
       <option value="">-</option>
@@ -86,33 +86,30 @@
   <tr>
     <th>Ady, dozasy</th>
 <!--    <th>Dozasy</th>-->
-    <th>Öndüriji</th>
+    <th>Производитель</th>
     <th>Mukdary</th>
     <th>Kontrakt</th>
-    <th>Gelen senesi</th>
-    <th>Balans</th>
-    <th>Akt</th>
-    <th>Öndürilen senesi</th>
+    <th>Öndürilen</th>
+    <th>Möhleti</th>
     <th>Seriýa Nomer</th>
     <th>Bahasy</th>
-    <th>Ýapyldy</th>
+    <th>Analiz Sert.</th>
     <th>Amallar</th>
   </tr>
   </thead>
   <tbody>
   <tr th:each="drug : ${drugs}">
-    <td th:text="${drug.name} + ', ' + ${drug.dose}+'ml'"></td>
+    <td th:text="${drug.name}"></td>
 <!--    <td th:text="${drug.dose}"></td>-->
-    <td th:text="${drug.manufacturer}"></td>
+    <td th:text="${drug.firma}"></td>
     <td th:text="${drug.quantity}"></td>
     <td th:text="${drug.contractNumber}"></td>
-    <td th:text="${drug.dateOfReceipt}"></td>
-    <td th:text="${drug.balance}"></td>
-    <td th:text="${drug.act}"></td>
     <td th:text="${drug.productionDate}"></td>
+    <td th:text="${drug.expireDate}"></td>
     <td th:text="${drug.seriesNumber}"></td>
+
     <td th:text="${drug.price}"></td>
-    <td th:text="${drug.isClosed ? 'Hawa' : 'Ýok'}"></td>
+    <td th:text="${drug.analizeCertification}"></td>
     <td>
       <div class="action-container">
         <span class="menu-icon" th:attr="onclick=|toggleMenu(event, '${drug.id}')|">&#8942;</span>
@@ -127,15 +124,9 @@
   </tr>
   </tbody>
 </table>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
 
-<a th:href="@{/drugs/add}" class="add-drug-btn">Derman goşmak</a>
+
+<!--<a th:href="@{/drugs/add}" class="add-drug-btn">Derman goşmak</a>-->
 
 
 </body>

@@ -29,6 +29,10 @@ public class DrugService {
         return drugRepository.findById(id).orElseThrow(() -> new RuntimeException("Derman tapylmady"));
     }
 
+    public List<Drug> findByCargoId(Long cargoId) {
+        return drugRepository.findByCargoId(cargoId);
+    }
+
     public void deleteDrug(Long id) {
         drugRepository.deleteById(id);
     }
@@ -36,16 +40,15 @@ public class DrugService {
     public void updateDrug(Long id, Drug updatedDrug) {
         Drug existingDrug = getDrugById(id);
         existingDrug.setName(updatedDrug.getName());
-        existingDrug.setDose(updatedDrug.getDose());
-        existingDrug.setManufacturer(updatedDrug.getManufacturer());
+        existingDrug.setFirma(updatedDrug.getFirma());
         existingDrug.setQuantity(updatedDrug.getQuantity());
         existingDrug.setContractNumber(updatedDrug.getContractNumber());
-        existingDrug.setDateOfReceipt(updatedDrug.getDateOfReceipt());
-        existingDrug.setBalance(updatedDrug.getBalance());
-        existingDrug.setAct(updatedDrug.getAct());
         existingDrug.setProductionDate(updatedDrug.getProductionDate());
         existingDrug.setSeriesNumber(updatedDrug.getSeriesNumber());
         existingDrug.setPrice(updatedDrug.getPrice());
+        existingDrug.setAnalizeCertification(updatedDrug.getAnalizeCertification());
+        existingDrug.setExpireDate(updatedDrug.getExpireDate());
+
 
         drugRepository.save(existingDrug);
     }

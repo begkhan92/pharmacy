@@ -10,9 +10,7 @@ public class DrugModel {
 
     private String nameDose;
 
-    @ManyToOne
-    @JoinColumn(name = "firma_id")
-    private Firma firma;
+    private String firma;
 
     public Long getId() {
         return id;
@@ -26,11 +24,11 @@ public class DrugModel {
         this.nameDose = nameDose;
     }
 
-    public Firma getFirma() {
+    public String getFirma() {
         return firma;
     }
 
-    public void setFirma(Firma firma) {
+    public void setFirma(String firma) {
         this.firma = firma;
     }
 }

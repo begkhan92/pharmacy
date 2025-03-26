@@ -18,15 +18,22 @@ public class DrugController {
 
     @GetMapping
     public String listDrugs(
+            @RequestParam(required = false) Long cargoId,  // Add cargoId parameter
             @RequestParam(required = false) String name,
             @RequestParam(required = false) String manufacturer,
             @RequestParam(required = false) Boolean isClosed,
             Model model
     ) {
-        List<Drug> drugs = drugService.filterDrugs(name, manufacturer, isClosed);
+        List<Drug> drugs;
+        if (cargoId != null) {
+            drugs = drugService.findByCargoId(cargoId); // Fetch drugs for the given cargo
+        } else {
+            drugs = drugService.filterDrugs(name, manufacturer, isClosed);
+        }
         model.addAttribute("drugs", drugs);
         return "drug-list";
     }
+
 
     @GetMapping("/add")
     public String showAddDrugForm(Model model) {

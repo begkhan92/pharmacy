@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Drug Selection</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+        .container {
+            display: flex;
+            gap: 20px;
+        }
+        .box {
+            width: 250  px;
+            min-height: 300px;
+            border: 2px dashed #ccc;
+            padding: 10px;
+            background-color: #f9f9f9;
+        }
+        .item {
+            padding: 8px;
+            margin: 5px;
+            background-color: #4CAF50;
+            color: white;
+            cursor: grab;
+            display: flex;
+            justify-content: space-between;
+        }
+        .delete-btn {
+            background: red;
+            border: none;
+            color: white;
+            cursor: pointer;
+            padding: 2px 5px;
+        }
+        .search {
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+
+<h2>Ýüke derman goşmak</h2>
+
+<div class="container">
+    <div>
+        <input type="text" class="search" placeholder="Derman gözle..." oninput="searchItems()">
+        <div class="box" id="items">
+            <div class="item" th:each="drug : ${drugs}"
+                 th:id="'drug-' + ${drug.id}"
+                 th:text="${drug.nameDose}"
+                 draggable="true" ondragstart="drag(event)">
+            </div>
+        </div>
+    </div>
+    <div class="box" id="dropzone" ondragover="allowDrop(event)" ondrop="drop(event)">
+        Drop selected drugs here
+    </div>
+</div>
+
+<button onclick="submitSelection()">Submit</button>
+
+<script>
+    function allowDrop(event) {
+        event.preventDefault();
+    }
+
+    function drag(event) {
+        event.dataTransfer.setData("text", event.target.id);
+    }
+
+function drop(event) {
+    event.preventDefault();
+    let itemId = event.dataTransfer.getData("text"); // Get dragged item's ID
+    let draggedItem = document.getElementById(itemId); // Find the dragged item
+
+    if (draggedItem) {
+        let newItem = document.createElement("div");
+        newItem.className = "item";
+        newItem.id = itemId;  // ✅ Keep original ID
+        newItem.draggable = true;
+        newItem.ondragstart = drag;
+        newItem.innerHTML = `${draggedItem.innerText} <button class='delete-btn' onclick='deleteItem(this, "${itemId}")'>X</button>`;
+
+        event.target.appendChild(newItem);
+        draggedItem.remove();
+    }
+}
+
+
+    function deleteItem(button, itemId) {
+        let itemText = button.parentElement.innerText.replace("X", "").trim();
+        button.parentElement.remove();
+
+        let restoredItem = document.createElement("div");
+        restoredItem.className = "item";
+        restoredItem.id = itemId;
+        restoredItem.draggable = true;
+        restoredItem.ondragstart = drag;
+        restoredItem.innerText = itemText;
+
+        document.getElementById("items").appendChild(restoredItem);
+    }
+
+    function searchItems() {
+        let input = document.querySelector(".search").value.toLowerCase();
+        let items = document.querySelectorAll("#items .item");
+
+        items.forEach(item => {
+            if (item.innerText.toLowerCase().includes(input)) {
+                item.style.display = "block";
+            } else {
+                item.style.display = "none";
+            }
+        });
+    }
+
+function submitSelection() {
+    let selectedItems = document.querySelectorAll("#dropzone .item");
+
+    let selectedIds = Array.from(selectedItems).map(item => {
+        return Number(item.id.replace("drug-", ""));
+    });
+
+    fetch("/cargo/submit", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(selectedIds)
+    })
+    .then(response => {
+        if (response.redirected) {
+            window.location.href = response.url;  // ✅ Manually redirect
+        }
+    })
+    .catch(error => console.error("Error:", error));
+}
+
+
+
+
+</script>
+
+</body>
+</html>

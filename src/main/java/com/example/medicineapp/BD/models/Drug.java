@@ -12,24 +12,32 @@ public class Drug {
     private Long id;
 
     private String name;
-    private String dose;
-    private String manufacturer;
+    private String firma;
     private Integer quantity;
     private String contractNumber;
-    private LocalDate dateOfReceipt;
-    private Integer balance;
-    private String act;
     private LocalDate productionDate;
+    private LocalDate expireDate;
     private String seriesNumber;
     private BigDecimal price;
+    private String analizeCertification;
+    @ManyToOne
+    @JoinColumn(name = "cargo_id", insertable = false, updatable = false)  // Matches Cargo's OneToMany
+    private Cargo cargo;
 
     private Boolean isClosed;
 
+    public Cargo getCargo() {
+        return cargo;
+    }
+
+    public void setCargo(Cargo cargo) {
+        this.cargo = cargo;
+    }
 
     public Boolean getIsClosed() {
-        this.isClosed = (name != null && dose != null && manufacturer != null && quantity != null &&
-                contractNumber != null && dateOfReceipt != null && balance != null &&
-                act != null && productionDate != null && seriesNumber != null && price != null);
+        this.isClosed = (name != null && firma != null && quantity != null &&
+                contractNumber != null && expireDate != null &&
+  productionDate != null && seriesNumber != null && price != null && analizeCertification != null);
 
         return isClosed;
     }
@@ -52,22 +60,6 @@ public class Drug {
         this.name = name;
     }
 
-    public String getDose() {
-        return dose;
-    }
-
-    public void setDose(String dose) {
-        this.dose = dose;
-    }
-
-    public String getManufacturer() {
-        return manufacturer;
-    }
-
-    public void setManufacturer(String manufacturer) {
-        this.manufacturer = manufacturer;
-    }
-
     public Integer getQuantity() {
         return quantity;
     }
@@ -82,30 +74,6 @@ public class Drug {
 
     public void setContractNumber(String contractNumber) {
         this.contractNumber = contractNumber;
-    }
-
-    public LocalDate getDateOfReceipt() {
-        return dateOfReceipt;
-    }
-
-    public void setDateOfReceipt(LocalDate dateOfReceipt) {
-        this.dateOfReceipt = dateOfReceipt;
-    }
-
-    public Integer getBalance() {
-        return balance;
-    }
-
-    public void setBalance(Integer balance) {
-        this.balance = balance;
-    }
-
-    public String getAct() {
-        return act;
-    }
-
-    public void setAct(String act) {
-        this.act = act;
     }
 
     public LocalDate getProductionDate() {
@@ -130,6 +98,30 @@ public class Drug {
 
     public void setPrice(BigDecimal price) {
         this.price = price;
+    }
+
+    public String getFirma() {
+        return firma;
+    }
+
+    public void setFirma(String firma) {
+        this.firma = firma;
+    }
+
+    public LocalDate getExpireDate() {
+        return expireDate;
+    }
+
+    public void setExpireDate(LocalDate expireDate) {
+        this.expireDate = expireDate;
+    }
+
+    public String getAnalizeCertification() {
+        return analizeCertification;
+    }
+
+    public void setAnalizeCertification(String analizeCertification) {
+        this.analizeCertification = analizeCertification;
     }
 }
 
