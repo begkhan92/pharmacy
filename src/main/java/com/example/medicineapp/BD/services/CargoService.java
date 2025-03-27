@@ -25,7 +25,10 @@ public class CargoService {
     public List<DrugModel> getSelectedDrugs() {
         return drugs;
     }
-
+    public Cargo findById(Long id) {
+        return cargoRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Cargo not found with ID: " + id));
+    }
     public List<Cargo> getAllCargo() {
         return cargoRepository.findAll();
     }

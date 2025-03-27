@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <title>Thymeleaf Grid</title>
+  <style>
+
+    body {
+    font-family: Arial, sans-serif;
+    background-color: #f0f8ff;
+    color: #333;
+    margin: 20px;
+    padding: 20px;
+}
+
+    .grid-container {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 10px;
+        width: 50%;
+        margin: auto;
+        text-align: center;
+        margin-top:50px
+    }
+    .a{
+    text-decoration:none
+    }
+    .grid-item {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100px;
+        border: 1px solid black;
+        font-size: 20px;
+         font-weight: bold;
+         color: #1e40af;
+         background: #e0f2fe;
+    }
+  </style>
+</head>
+<body>
+<div class="grid-container">
+  <a th:href="@{/cargo}"><div class="grid-item"  th:text="Ýükler"></div></a>
+  <a th:href="@{/drug-models}"><div class="grid-item"  th:text="Dermanlar"></div></a>
+</div>
+</body>
+</html>

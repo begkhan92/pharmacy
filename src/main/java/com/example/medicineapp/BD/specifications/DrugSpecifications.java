@@ -12,6 +12,12 @@ public class DrugSpecifications {
                         criteriaBuilder.like(root.get("name"), "%" + name + "%");
     }
 
+    public static Specification<Drug> hasCargoId(Long cargoId) {
+        return (root, query, criteriaBuilder) ->
+                cargoId == null ? null : criteriaBuilder.equal(root.get("cargo").get("id"), cargoId);
+    }
+
+
     public static Specification<Drug> hasFirma(String firma) {
         return (root, query, criteriaBuilder) ->
                 firma == null || firma.isEmpty() ?

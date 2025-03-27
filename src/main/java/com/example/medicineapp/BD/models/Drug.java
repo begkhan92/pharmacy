@@ -21,8 +21,13 @@ public class Drug {
     private BigDecimal price;
     private String analizeCertification;
     @ManyToOne
-    @JoinColumn(name = "cargo_id", insertable = false, updatable = false)  // Matches Cargo's OneToMany
+    @JoinColumn(name = "cargo_id")  // Allow inserting and updating cargo_id
     private Cargo cargo;
+
+    @ManyToOne
+    @JoinColumn(name = "contract_id")  // Allow inserting and updating cargo_id
+    private Contract contract;
+
 
     private Boolean isClosed;
 
@@ -34,6 +39,14 @@ public class Drug {
         this.cargo = cargo;
     }
 
+    public Contract getContract() {
+        return contract;
+    }
+
+    public void setContract(Contract contract) {
+        this.contract = contract;
+    }
+
     public Boolean getIsClosed() {
         this.isClosed = (name != null && firma != null && quantity != null &&
                 contractNumber != null && expireDate != null &&
@@ -43,6 +56,7 @@ public class Drug {
     }
 
     // Getters and setters
+
 
     public Long getId() {
         return id;

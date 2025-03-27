@@ -1,6 +1,8 @@
 package com.example.medicineapp.BD.controllers;
 
+import com.example.medicineapp.BD.models.Cargo;
 import com.example.medicineapp.BD.models.Drug;
+import com.example.medicineapp.BD.services.CargoService;
 import com.example.medicineapp.BD.services.DrugService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -15,37 +17,45 @@ public class DrugController {
 
     @Autowired
     private DrugService drugService;
+    @Autowired
+    private CargoService cargoService;
 
     @GetMapping
     public String listDrugs(
-            @RequestParam(required = false) Long cargoId,  // Add cargoId parameter
+            @RequestParam Long cargoId,  // Required cargoId
             @RequestParam(required = false) String name,
             @RequestParam(required = false) String firma,
             @RequestParam(required = false) String contractNumber,
             @RequestParam(required = false) Boolean isClosed,
             Model model
     ) {
-        List<Drug> drugs;
-        if (cargoId != null) {
-            drugs = drugService.findByCargoId(cargoId); // Fetch drugs for the given cargo
-        } else {
-            drugs = drugService.filterDrugs(name, firma, isClosed, contractNumber);
-        }
+        List<Drug> drugs = drugService.filterDrugs(cargoId, name, firma, isClosed, contractNumber);
         model.addAttribute("drugs", drugs);
+        model.addAttribute("cargoId", cargoId);
         return "drug-list";
     }
 
 
+
     @GetMapping("/add")
-    public String showAddDrugForm(Model model) {
+    public String showAddDrugForm(Model model, @RequestParam Long cargoId) {
         model.addAttribute("drug", new Drug());
+        model.addAttribute("cargoId", cargoId);
         return "add-drug";
     }
 
     @PostMapping("/save")
-    public String saveDrug(@ModelAttribute("drug") Drug drug) {
+    public String saveDrug(@ModelAttribute("drug") Drug drug, @RequestParam("cargoId") Long cargoId) {
+        Cargo cargo = cargoService.findById(cargoId); // Fetch cargo from DB
+        if (cargo == null) {
+            System.out.println("Hic zat yok");
+            throw new IllegalArgumentException("Invalid Cargo ID");
+
+        }
+        System.out.println(cargoId);
+        drug.setCargo(cargo);
         drugService.saveDrug(drug);
-        return "redirect:/drugs";
+        return "redirect:/drugs?cargoId=" + cargoId;
     }
 
     @GetMapping("/edit/{id}")
@@ -57,8 +67,8 @@ public class DrugController {
 
     @PostMapping("/update/{id}")
     public String updateDrug(@PathVariable Long id, @ModelAttribute("drug") Drug updatedDrug) {
-        drugService.updateDrug(id, updatedDrug);
-        return "redirect:/drugs";
+        Drug newDrug = drugService.updateDrug(id, updatedDrug);
+        return "redirect:/drugs?cargoId=" + newDrug.getCargo().getId();
     }
 
     @GetMapping("/delete/{id}")

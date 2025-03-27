@@ -21,7 +21,6 @@ public class DrugService {
 
     public void saveDrug(Drug drug) {
 
-        System.out.println(drug.getIsClosed());
         drugRepository.save(drug);
     }
 
@@ -37,7 +36,7 @@ public class DrugService {
         drugRepository.deleteById(id);
     }
 
-    public void updateDrug(Long id, Drug updatedDrug) {
+    public Drug updateDrug(Long id, Drug updatedDrug) {
         Drug existingDrug = getDrugById(id);
         existingDrug.setName(updatedDrug.getName());
         existingDrug.setFirma(updatedDrug.getFirma());
@@ -51,16 +50,23 @@ public class DrugService {
 
 
         drugRepository.save(existingDrug);
+        return existingDrug;
     }
 
-    public List<Drug> filterDrugs(String name, String firma, Boolean isClosed, String contractNumber) {
+    public List<Drug> filterDrugs(Long cargoId, String name, String firma, Boolean isClosed, String contractNumber) {
+        if (cargoId == null) {
+            throw new IllegalArgumentException("cargoId cannot be null");
+        }
+
         Specification<Drug> spec = Specification
-                .where(DrugSpecifications.hasName(name))
+                .where(DrugSpecifications.hasCargoId(cargoId)) // Ensure cargoId is checked
+                .and(DrugSpecifications.hasName(name))
                 .and(DrugSpecifications.hasFirma(firma))
                 .and(DrugSpecifications.hasContactNumber(contractNumber))
                 .and(DrugSpecifications.hasClosedStatus(isClosed));
 
         return drugRepository.findAll(spec);
     }
+
 }
 

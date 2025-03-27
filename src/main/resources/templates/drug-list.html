@@ -69,6 +69,10 @@
 <body>
 
 <form th:action="@{/drugs}" method="get">
+  <label>Ýük ID:
+    <input type="number" name="cargoId" th:value="${cargoId}" style="width: 50px;" readonly />
+  </label>
+
   <label>Ady: <input type="text" name="name" /></label>
   <label>Производитель: <input type="text" name="firma" /></label>
   <label>Kontrakt: <input type="text" name="contractNumber"/></label>
@@ -127,7 +131,7 @@
   </tbody>
 </table>
 
-<a th:href="@{/drugs/add}" class="add-drug-btn">Derman goşmak</a>
+<a th:href="@{/drugs/add(cargoId=${cargoId})}" class="add-drug-btn">Derman goşmak</a>
 
 
 </body>
