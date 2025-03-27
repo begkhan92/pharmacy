@@ -12,11 +12,18 @@ public class DrugSpecifications {
                         criteriaBuilder.like(root.get("name"), "%" + name + "%");
     }
 
-    public static Specification<Drug> hasManufacturer(String manufacturer) {
+    public static Specification<Drug> hasFirma(String firma) {
         return (root, query, criteriaBuilder) ->
-                manufacturer == null || manufacturer.isEmpty() ?
+                firma == null || firma.isEmpty() ?
                         criteriaBuilder.conjunction() :
-                        criteriaBuilder.like(root.get("manufacturer"), "%" + manufacturer + "%");
+                        criteriaBuilder.like(root.get("firma"), "%" + firma + "%");
+    }
+
+    public static Specification<Drug> hasContactNumber(String contractNumber) {
+        return (root, query, criteriaBuilder) ->
+                contractNumber == null || contractNumber.isEmpty() ?
+                        criteriaBuilder.conjunction() :
+                        criteriaBuilder.like(root.get("contractNumber"), "%" + contractNumber + "%");
     }
 
     public static Specification<Drug> hasClosedStatus(Boolean isClosed) {

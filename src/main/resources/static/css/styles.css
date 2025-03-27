@@ -13,21 +13,16 @@ h1 {
 
 form {
     background: #e0f2fe;
-    padding: 15px;
+    padding: 8px;
     border-radius: 8px;
     display: flex;
     gap: 10px;
-    justify-content: center;
-    align-items: center;
     flex-wrap: wrap;
 }
 
-label {
-    font-weight: bold;
-}
 
 input, select {
-    padding: 8px;
+    padding: 5px;
     border: 1px solid #93c5fd;
     border-radius: 5px;
 }
@@ -35,7 +30,7 @@ input, select {
 button {
     background-color: #1e40af;
     color: white;
-    padding: 10px 15px;
+    padding: 5px 15px;
     border: none;
     border-radius: 5px;
     cursor: pointer;
@@ -98,7 +93,7 @@ tbody tr:hover {
 a {
     display: block;
     text-align: center;
-    margin-top: 20px;
+
     text-decoration: none;
     font-weight: bold;
     color: #1e40af;

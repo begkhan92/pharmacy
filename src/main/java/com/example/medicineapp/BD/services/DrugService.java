@@ -53,10 +53,11 @@ public class DrugService {
         drugRepository.save(existingDrug);
     }
 
-    public List<Drug> filterDrugs(String name, String manufacturer, Boolean isClosed) {
+    public List<Drug> filterDrugs(String name, String firma, Boolean isClosed, String contractNumber) {
         Specification<Drug> spec = Specification
                 .where(DrugSpecifications.hasName(name))
-                .and(DrugSpecifications.hasManufacturer(manufacturer))
+                .and(DrugSpecifications.hasFirma(firma))
+                .and(DrugSpecifications.hasContactNumber(contractNumber))
                 .and(DrugSpecifications.hasClosedStatus(isClosed));
 
         return drugRepository.findAll(spec);

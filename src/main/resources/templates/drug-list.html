@@ -70,7 +70,8 @@
 
 <form th:action="@{/drugs}" method="get">
   <label>Ady: <input type="text" name="name" /></label>
-  <label>Öndüriji: <input type="text" name="firma" /></label>
+  <label>Производитель: <input type="text" name="firma" /></label>
+  <label>Kontrakt: <input type="text" name="contractNumber"/></label>
   <label>Ýapyldy:
     <select name="isClosed">
       <option value="">-</option>
@@ -115,6 +116,7 @@
         <span class="menu-icon" th:attr="onclick=|toggleMenu(event, '${drug.id}')|">&#8942;</span>
         <div th:id="'menu-' + ${drug.id}" class="dropdown-menu">
           <a th:href="@{/drugs/edit/{id}(id=${drug.id})}">Üýtget</a>
+          <br>
           <a th:href="@{/drugs/delete/{id}(id=${drug.id})}" onclick="return confirm('Siz hakykatdanam pozmak isleýärsiňizmi?');">
             Poz
           </a>
@@ -125,8 +127,7 @@
   </tbody>
 </table>
 
-
-<!--<a th:href="@{/drugs/add}" class="add-drug-btn">Derman goşmak</a>-->
+<a th:href="@{/drugs/add}" class="add-drug-btn">Derman goşmak</a>
 
 
 </body>
