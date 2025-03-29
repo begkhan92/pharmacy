@@ -2,6 +2,7 @@ package com.example.medicineapp.BD.models;
 
 import jakarta.persistence.*;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Entity
@@ -12,9 +13,12 @@ public class Cargo {
     private Long id;
 
     private String actNumber;
-    //    private List<Invoice> invoices;
+    private String invoiceNumber;
     private int numberOftransport;
     private String CMRNumber;
+    private LocalDate dateArrived;
+    private LocalDate dateClosed;
+//    private Firma firma;
 
     @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name = "cargo_id")  // This creates a foreign key in DrugModel
@@ -39,14 +43,13 @@ public class Cargo {
         this.actNumber = actNumber;
     }
 
-//    public List<Invoice> getInvoices() {
-//        return invoices;
-//    }
+    public String getInvoiceNumber() {
+        return invoiceNumber;
+    }
 
-//    public void setInvoices(List<Invoice> invoices) {
-//        this.invoices = invoices;
-//    }
-
+    public void setInvoiceNumber(String invoiceNumber) {
+        this.invoiceNumber = invoiceNumber;
+    }
 
     public List<Drug> getDrugs() {
         return drugs;
@@ -72,7 +75,31 @@ public class Cargo {
         this.CMRNumber = CMRNumber;
     }
 
-//    public List<Drug> getDrugs() {
+    public LocalDate getDateArrived() {
+        return dateArrived;
+    }
+
+    public void setDateArrived(LocalDate dateArrived) {
+        this.dateArrived = dateArrived;
+    }
+
+    public LocalDate getDateClosed() {
+        return dateClosed;
+    }
+
+    public void setDateClosed(LocalDate dateClosed) {
+        this.dateClosed = dateClosed;
+    }
+//
+//    public Firma getFirma() {
+//        return firma;
+//    }
+//
+//    public void setFirma(Firma firma) {
+//        this.firma = firma;
+//    }
+
+    //    public List<Drug> getDrugs() {
 //        return drugs;
 //    }
 //

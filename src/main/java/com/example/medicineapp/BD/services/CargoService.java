@@ -5,7 +5,10 @@ import com.example.medicineapp.BD.models.Drug;
 import com.example.medicineapp.BD.models.DrugModel;
 import com.example.medicineapp.BD.repositories.CargoRepository;
 import com.example.medicineapp.BD.repositories.DrugModelRepository;
+import com.example.medicineapp.BD.specifications.CargoSpecification;
+import com.example.medicineapp.BD.specifications.DrugSpecifications;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -20,6 +23,21 @@ public class CargoService {
 
     public void setSelectedDrugs(List<DrugModel> drugs) {
         this.drugs = drugs;
+    }
+
+    public List<Cargo> filterCargos(Integer year, Integer month) {
+
+
+        Specification<Cargo> spec = Specification
+                    .where(CargoSpecification.hasDateArrivedInYearAndMonth(year, month)); // Ensure cargoId is checked
+//                .and(DrugSpecifications.hasName(name))
+//                .and(DrugSpecifications.hasFirma(firma))
+//                .and(DrugSpecifications.hasContactNumber(contractNumber))
+//                .and(DrugSpecifications.hasClosedStatus(isClosed));
+
+
+
+        return cargoRepository.findAll(spec);
     }
 
     public List<DrugModel> getSelectedDrugs() {
