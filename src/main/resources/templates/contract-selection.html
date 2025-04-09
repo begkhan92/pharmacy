@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" th:href="@{/css/navbar.css}">
+    <title>Drug Selection</title>
+    <style>
+        :root {
+            --contract-color: #007bff;
+            --contract-drug-color: #17a2b8;
+            --selected-drug-color: #28a745;
+        }
+
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background-color: #f4f8fc;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        h2 {
+            margin-bottom: 20px;
+        }
+
+        .container {
+            display: flex;
+            gap: 20px;
+            width: 90%;
+            height: 70vh;
+            justify-content: center;
+        }
+
+        .zone {
+            background: #fff;
+            border: 1px solid #ccc;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            max-height: 100%;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+
+        .zone h3 {
+            background-color: #eee;
+            padding: 10px;
+            margin: 0;
+            text-align: center;
+        }
+
+        .search-bar {
+            padding: 10px;
+            border: none;
+            border-bottom: 1px solid #ccc;
+            font-size: 14px;
+        }
+
+        .box {
+            overflow-y: auto;
+            padding: 10px;
+            flex: 1;
+        }
+
+        .item {
+            padding: 10px;
+            margin: 8px 0;
+            border-radius: 5px;
+            cursor: grab;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 14px;
+            color: white;
+        }
+
+        .contracts .item {
+            background-color: var(--contract-color);
+        }
+
+        .contract-drugs .item {
+            background-color: var(--contract-drug-color);
+        }
+
+        .dropzone .item {
+            background-color: var(--selected-drug-color);
+            position: relative;
+        }
+
+        .dropzone .item:hover::after {
+            content: attr(data-contract-name);
+            position: absolute;
+            top: -25px;
+            left: 0;
+            background: rgba(0, 0, 0, 0.75);
+            color: white;
+            padding: 5px 8px;
+            font-size: 12px;
+            border-radius: 5px;
+            white-space: nowrap;
+        }
+
+        .delete-btn {
+            background: rgba(255, 0, 0, 0.85);
+            border: none;
+            color: white;
+            font-size: 12px;
+            padding: 2px 6px;
+            cursor: pointer;
+            border-radius: 3px;
+            margin-left: 10px;
+        }
+
+        .add-drug-btn {
+            margin-top: 20px;
+            padding: 10px 30px;
+            background-color: #28a745;
+            color: white;
+            font-size: 16px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .item.selected {
+            outline: 2px solid gold;
+        }
+
+    </style>
+</head>
+<body>
+<div class="navbar">
+    <div class="logo">BD</div>
+    <ul>
+        <li><a th:href="@{/}">Baş sahypa</a></li>
+        <li><a th:href="@{/cargo}">Ýükler</a></li>
+        <li><a th:href="@{/drug-models}">Dermanlar</a></li>
+        <li><a th:href="@{/contracts}">Kontraktlar</a></li>
+    </ul>
+</div>
+
+<h2 style="padding-top: 70px;">Ýüke derman goşmak</h2>
+
+<div class="container">
+    <!-- Contracts -->
+    <div class="zone contracts">
+        <h3>Kontraktlar</h3>
+        <input type="text" class="search-bar" placeholder="Kontrakt gözle..." oninput="searchZone('contracts')">
+        <div class="box" id="contracts">
+            <div class="item" th:each="contract : ${contracts}"
+                 th:id="'contract-' + ${contract.id}"
+
+                 onclick="selectContract(this)">
+                <span>
+                    №     <strong> <i th:text="${contract.number}"></i></strong>
+                </span>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- Contract Drugs -->
+    <div class="zone contract-drugs">
+        <h3>Kontraktdaky dermanlar</h3>
+        <input type="text" class="search-bar" placeholder="Derman gözle..." oninput="searchZone('contract-drugs')">
+        <div class="box" id="contract-drugs" ondragover="allowDrop(event)" ondrop="drop(event)">
+            <!-- Drugs appear here -->
+        </div>
+    </div>
+
+    <!-- Dropzone -->
+    <div class="zone dropzone">
+        <h3>Saýlanan dermanlar</h3>
+        <input type="text" class="search-bar" placeholder="Saýlanan derman gözle..." oninput="searchZone('dropzone')">
+        <div class="box" id="dropzone" ondragover="allowDrop(event)" ondrop="drop(event)">
+            <div th:each="drug : ${selectedDrugs}"
+                 th:id="'drug-' + ${drug.id}"
+                 class="item"
+                 draggable="true"
+                 ondragstart="drag(event)"
+                 th:data-contract-id="${drug.cargo.id}"
+                 th:data-contract-name="'Kontrakt №' + ${drug.cargo.id}"
+                 th:text="${drug.name} + ' - ' + ${drug.firma}">
+                <button class='delete-btn' onclick='deleteItem(this, "drug-" + [[${drug.id}]])'>X</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<button onclick="submitSelection()" class="add-drug-btn">Indiki</button>
+
+<script>
+    function allowDrop(event) {
+        event.preventDefault();
+    }
+
+    function drag(event) {
+        event.dataTransfer.setData("text", event.target.id);
+    }
+
+    function drop(event) {
+        event.preventDefault();
+        let itemId = event.dataTransfer.getData("text");
+        let draggedItem = document.getElementById(itemId);
+
+        if (draggedItem) {
+            const contractId = draggedItem.dataset.contractId;
+            const contractName = draggedItem.dataset.contractName;
+
+            let newItem = document.createElement("div");
+            newItem.className = "item";
+            newItem.id = itemId;
+            newItem.draggable = true;
+            newItem.ondragstart = drag;
+            newItem.dataset.contractId = contractId;
+            newItem.dataset.contractName = contractName;
+            newItem.innerHTML = `${draggedItem.innerText} <button class='delete-btn' onclick='deleteItem(this, "${itemId}")'>X</button>`;
+
+            document.getElementById("dropzone").appendChild(newItem);
+            draggedItem.remove();
+        }
+    }
+
+    function deleteItem(button, itemId) {
+        const itemDiv = button.parentElement;
+        const itemText = itemDiv.innerText.replace("X", "").trim();
+        const contractId = itemDiv.dataset.contractId;
+        const contractName = itemDiv.dataset.contractName;
+
+        itemDiv.remove();
+
+        const currentContract = document.querySelector("#contracts .item.selected");
+        if (currentContract && currentContract.id === "contract-" + contractId) {
+            let restoredItem = document.createElement("div");
+            restoredItem.className = "item";
+            restoredItem.id = itemId;
+            restoredItem.draggable = true;
+            restoredItem.ondragstart = drag;
+            restoredItem.dataset.contractId = contractId;
+            restoredItem.dataset.contractName = contractName;
+            restoredItem.innerText = itemText;
+
+            document.getElementById("contract-drugs").appendChild(restoredItem);
+        }
+    }
+
+    function selectContract(element) {
+        document.querySelectorAll("#contracts .item").forEach(item => item.classList.remove("selected"));
+        element.classList.add("selected");
+
+        let contractId = element.id.replace("contract-", "");
+
+        fetch(`/contract/${contractId}/drugs`)
+            .then(response => response.json())
+            .then(drugs => {
+                let contractDrugsBox = document.getElementById("contract-drugs");
+                contractDrugsBox.innerHTML = "";
+
+                const selectedDrugIds = Array.from(document.querySelectorAll("#dropzone .item")).map(item => item.id);
+
+                drugs.forEach(drug => {
+                    let drugId = "drug-" + drug.id;
+                    if (!selectedDrugIds.includes(drugId)) {
+                        let drugItem = document.createElement("div");
+                        drugItem.className = "item";
+                        drugItem.id = drugId;
+                        drugItem.draggable = true;
+                        drugItem.ondragstart = drag;
+                        drugItem.dataset.contractId = contractId;
+                        drugItem.dataset.contractNumber = drug.contractNumber;
+                        drugItem.dataset.contractName = "Kontrakt №" + contractId;
+                        drugItem.innerText = drug.name + " - " + drug.firma;
+
+                        contractDrugsBox.appendChild(drugItem);
+                    }
+                });
+            })
+            .catch(error => console.error("Error fetching drugs:", error));
+    }
+
+    function searchZone(zoneId) {
+        const input = document.querySelector(`.${zoneId} .search-bar`).value.toLowerCase();
+        const items = document.querySelectorAll(`#${zoneId} .item`);
+
+        items.forEach(item => {
+            item.style.display = item.innerText.toLowerCase().includes(input) ? "flex" : "none";
+        });
+    }
+
+    function submitSelection() {
+        const selectedItems = document.querySelectorAll("#dropzone .item");
+        const selectedIds = Array.from(selectedItems).map(item => Number(item.id.replace("drug-", "")));
+
+        fetch("/cargo/submit", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(selectedIds)
+        })
+            .then(response => {
+                if (response.redirected) {
+                    window.location.href = response.url;
+                }
+            })
+            .catch(error => console.error("Error submitting:", error));
+    }
+</script>
+
+</body>
+</html>

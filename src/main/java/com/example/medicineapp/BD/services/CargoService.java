@@ -19,9 +19,9 @@ public class CargoService {
 
     @Autowired
     private CargoRepository cargoRepository;
-    private List<DrugModel> drugs = new ArrayList<>();
+    private List<Drug> drugs = new ArrayList<>();
 
-    public void setSelectedDrugs(List<DrugModel> drugs) {
+    public void setSelectedDrugs(List<Drug> drugs) {
         this.drugs = drugs;
     }
 
@@ -40,7 +40,10 @@ public class CargoService {
         return cargoRepository.findAll(spec);
     }
 
-    public List<DrugModel> getSelectedDrugs() {
+
+
+
+    public List<Drug> getSelectedDrugs() {
         return drugs;
     }
     public Cargo findById(Long id) {

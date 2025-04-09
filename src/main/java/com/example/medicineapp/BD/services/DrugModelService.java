@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class DrugModelService {
@@ -20,6 +21,28 @@ public class DrugModelService {
 
     public void saveDrugModel(DrugModel drugModel) {
         drugModelRepository.save(drugModel);
+    }
+
+    public DrugModel getDrugById(Long id) {
+        return drugModelRepository.findById(id).orElseThrow(() -> new RuntimeException("Derman tapylmady"));
+    }
+
+    public DrugModel updateDrugModel(Long id, DrugModel updatedDrugModel) {
+        DrugModel existingDrugModel = getDrugById(id);
+        existingDrugModel.setNameDose(updatedDrugModel.getNameDose());
+        existingDrugModel.setFirma(updatedDrugModel.getFirma());
+
+
+        drugModelRepository.save(existingDrugModel);
+        return existingDrugModel;
+    }
+
+    public Optional<DrugModel> getDrugModelById(Long id){
+        return drugModelRepository.findById(id);
+    }
+
+    public List<DrugModel> searchDrugModel(String name, String firma){
+        return drugModelRepository.findByNameDoseContainingIgnoreCaseOrFirmaContainingIgnoreCase(name, firma);
     }
 
 }

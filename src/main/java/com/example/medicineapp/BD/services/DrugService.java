@@ -41,7 +41,6 @@ public class DrugService {
         existingDrug.setName(updatedDrug.getName());
         existingDrug.setFirma(updatedDrug.getFirma());
         existingDrug.setQuantity(updatedDrug.getQuantity());
-        existingDrug.setContractNumber(updatedDrug.getContractNumber());
         existingDrug.setProductionDate(updatedDrug.getProductionDate());
         existingDrug.setSeriesNumber(updatedDrug.getSeriesNumber());
         existingDrug.setPrice(updatedDrug.getPrice());
@@ -53,13 +52,14 @@ public class DrugService {
         return existingDrug;
     }
 
-    public List<Drug> filterDrugs(Long cargoId, String name, String firma, Boolean isClosed, String contractNumber) {
-        if (cargoId == null) {
-            throw new IllegalArgumentException("cargoId cannot be null");
+    public List<Drug> filterDrugs(Long cargoId, Long contractId, String name, String firma, Boolean isClosed, String contractNumber) {
+        if (cargoId == null && contractId == null) {
+            throw new IllegalArgumentException("both of cargoId and contractId cannot be null");
         }
 
         Specification<Drug> spec = Specification
-                .where(DrugSpecifications.hasCargoId(cargoId)) // Ensure cargoId is checked
+                .where(DrugSpecifications.hasCargoId(cargoId))
+                .and(DrugSpecifications.hasContractId(contractId))// Ensure cargoId is checked
                 .and(DrugSpecifications.hasName(name))
                 .and(DrugSpecifications.hasFirma(firma))
                 .and(DrugSpecifications.hasContactNumber(contractNumber))

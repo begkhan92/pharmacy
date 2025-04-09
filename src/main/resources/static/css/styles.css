@@ -93,11 +93,10 @@ tbody tr:hover {
 a {
     display: block;
     text-align: center;
-
+    color:white;
     text-decoration: none;
     font-weight: bold;
-    color: #1e40af;
-    background: #e0f2fe;
+    background: #218838;
     padding: 10px;
     border-radius: 5px;
     width: fit-content;

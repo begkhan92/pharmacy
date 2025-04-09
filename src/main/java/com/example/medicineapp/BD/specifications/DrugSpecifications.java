@@ -17,6 +17,11 @@ public class DrugSpecifications {
                 cargoId == null ? null : criteriaBuilder.equal(root.get("cargo").get("id"), cargoId);
     }
 
+    public static Specification<Drug> hasContractId(Long contractId) {
+        return (root, query, criteriaBuilder) ->
+                contractId == null ? null : criteriaBuilder.equal(root.get("contract").get("id"), contractId);
+    }
+
 
     public static Specification<Drug> hasFirma(String firma) {
         return (root, query, criteriaBuilder) ->

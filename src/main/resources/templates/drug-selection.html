@@ -61,7 +61,7 @@
 </head>
 <body>
 
-<h2>Ýüke derman goşmak</h2>
+<h2>Kontrakta derman goşmak</h2>
 
 <div class="container">
     <div>
@@ -94,6 +94,7 @@ function drop(event) {
     event.preventDefault();
     let itemId = event.dataTransfer.getData("text"); // Get dragged item's ID
     let draggedItem = document.getElementById(itemId); // Find the dragged item
+    let dropzone = document.getElementById("dropzone"); // Ensure correct target
 
     if (draggedItem) {
         let newItem = document.createElement("div");
@@ -103,10 +104,11 @@ function drop(event) {
         newItem.ondragstart = drag;
         newItem.innerHTML = `${draggedItem.innerText} <button class='delete-btn' onclick='deleteItem(this, "${itemId}")'>X</button>`;
 
-        event.target.appendChild(newItem);
+        dropzone.appendChild(newItem); // ✅ Append to dropzone, not another item
         draggedItem.remove();
     }
 }
+
 
 
     function deleteItem(button, itemId) {
@@ -143,7 +145,7 @@ function submitSelection() {
         return Number(item.id.replace("drug-", ""));
     });
 
-    fetch("/cargo/submit", {
+    fetch("/contract/submit", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(selectedIds)

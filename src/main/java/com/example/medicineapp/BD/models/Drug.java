@@ -1,5 +1,6 @@
 package com.example.medicineapp.BD.models;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -14,18 +15,20 @@ public class Drug {
     private String name;
     private String firma;
     private Integer quantity;
-    private String contractNumber;
     private LocalDate productionDate;
     private LocalDate expireDate;
     private String seriesNumber;
     private BigDecimal price;
     private String analizeCertification;
+
     @ManyToOne
-    @JoinColumn(name = "cargo_id")  // Allow inserting and updating cargo_id
+    @JoinColumn(name = "cargo_id")
+    @JsonBackReference // Allow inserting and updating cargo_id
     private Cargo cargo;
 
     @ManyToOne
-    @JoinColumn(name = "contract_id")  // Allow inserting and updating cargo_id
+    @JoinColumn(name = "contract_id")
+    @JsonBackReference// Allow inserting and updating cargo_id
     private Contract contract;
 
 
@@ -49,7 +52,7 @@ public class Drug {
 
     public Boolean getIsClosed() {
         this.isClosed = (name != null && firma != null && quantity != null &&
-                contractNumber != null && expireDate != null &&
+                contract != null && expireDate != null &&
   productionDate != null && seriesNumber != null && price != null && analizeCertification != null);
 
         return isClosed;
@@ -82,13 +85,6 @@ public class Drug {
         this.quantity = quantity;
     }
 
-    public String getContractNumber() {
-        return contractNumber;
-    }
-
-    public void setContractNumber(String contractNumber) {
-        this.contractNumber = contractNumber;
-    }
 
     public LocalDate getProductionDate() {
         return productionDate;

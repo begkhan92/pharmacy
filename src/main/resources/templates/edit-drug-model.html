@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="eng">
+<head>
+  <title>Derman Üýtgetmek</title>
+  <link rel="stylesheet" type="text/css" th:href="@{/css/styles.css}">
+</head>
+<body>
+<h1>Derman Üýtgetmek</h1>
+
+<form th:action="@{/drug-models/update/{id}(id=${drugModel.id})}" th:object="${drugModel}" method="post">
+  <label>Ady: <input type="text" th:field="*{nameDose}" /></label><br>
+  <label>Производитель: <input type="text" th:field="*{firma}" /></label><br>
+  <button type="submit">Üýtget</button>
+</form>
+
+<a th:href="@{/drug-models}">Yza</a>
+
+</body>
+</html>

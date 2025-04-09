@@ -1,32 +1,36 @@
 package com.example.medicineapp.BD.controllers;
 
 import com.example.medicineapp.BD.models.Cargo;
+import com.example.medicineapp.BD.models.Contract;
 import com.example.medicineapp.BD.models.Drug;
-import com.example.medicineapp.BD.models.DrugModel;
 import com.example.medicineapp.BD.repositories.DrugModelRepository;
+import com.example.medicineapp.BD.repositories.DrugRepository;
 import com.example.medicineapp.BD.services.CargoService;
-import org.springframework.data.jpa.domain.Specification;
+import com.example.medicineapp.BD.services.ContractService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
 @Controller
-@RequestMapping("/cargo")
+@RequestMapping("/cargos")
 public class CargoController {
 
     private final CargoService cargoService;
-    private final DrugModelRepository drugModelRepository;
+    private final ContractService contractService;
+    private final DrugRepository drugRepository;
 
-    public CargoController(CargoService cargoService, DrugModelRepository drugModelRepository) {
+
+    public CargoController(CargoService cargoService, ContractService contractService, DrugRepository drugRepository, DrugModelRepository drugModelRepository) {
         this.cargoService = cargoService;
-        this.drugModelRepository = drugModelRepository;
+        this.contractService = contractService;
+        this.drugRepository = drugRepository;
     }
 
     @GetMapping
@@ -54,33 +58,39 @@ public class CargoController {
         model.addAttribute("year", year);
         model.addAttribute("month", month);
         model.addAttribute("months", months);
-        return "cargo-list";
+        return "list-cargo";
     }
 
+
+
     @GetMapping("/add-drugs")
-    public String getDrugs(Model model) {
-        List<DrugModel> drugs = drugModelRepository.findAll();
+    public String getDrugs(@RequestParam(required = false) Long cargoId, Model model) {
+        List<Drug> drugs = drugRepository.findAll();
+        List<Contract> contracts = contractService.getAllContract();
+
+        List<Drug> cargoDrugs = new ArrayList<>();
+        if (cargoId != null) {
+            cargoDrugs = drugRepository.findByCargoId(cargoId); // Fetch drugs in this cargo
+        }
+
         model.addAttribute("drugs", drugs);
-        return "drug-selection";
+        model.addAttribute("contracts", contracts);
+        model.addAttribute("cargoDrugs", cargoDrugs); // Pass existing cargo drugs to the view
+
+        return "contract-selection";
     }
+
 
     @PostMapping("/save")
     public String saveCargo(@ModelAttribute("cargo") Cargo cargo) {
 
-        List<DrugModel> selectedDrugModels = cargoService.getSelectedDrugs();
+        List<Drug> selectedDrugModels = cargoService.getSelectedDrugs();
 
+        for (Drug drug : selectedDrugModels) {
+            drug = drugRepository.findById(drug.getId()).orElse(drug);
+            cargo.addDrug(drug);
+        }
 
-        List<Drug> drugs = selectedDrugModels.stream().map(drugModel -> {
-            Drug drug = new Drug();
-            drug.setName(drugModel.getNameDose()); // Set name from DrugModel
-            drug.setFirma(drugModel.getFirma()); // Set firma from DrugModel
-            drug.setCargo(cargo); // Associate with Cargo
-            return drug;
-        }).toList();
-
-        cargo.setDrugs(drugs);
-
-        // Save Cargo (will also save Drugs due to cascade)
         cargoService.saveCargo(cargo);
         return "redirect:/cargo";
     }
@@ -97,7 +107,7 @@ public class CargoController {
     public RedirectView submitDrugs(@RequestBody List<Long> selectedDrugIds) {
         System.out.println("Received Drug IDs: " + selectedDrugIds); // Debugging
 
-        List<DrugModel> selectedDrugs = drugModelRepository.findAllById(selectedDrugIds);
+        List<Drug> selectedDrugs = drugRepository.findAllById(selectedDrugIds);
 
         cargoService.setSelectedDrugs(selectedDrugs);
 
