@@ -32,5 +32,7 @@ public class DrugDTO {
     public String getContractNumber() {
         return contractNumber;
     }
+
+
 }
 

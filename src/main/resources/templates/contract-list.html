@@ -10,9 +10,9 @@
   <div class="logo">BD</div>
   <ul>
     <li><a th:href="@{/}">Baş sahypa</a></li>
-    <li><a th:href="@{/cargo}">Ýükler</a></li>
+    <li><a th:href="@{/cargos}">Ýükler</a></li>
     <li><a th:href="@{/drug-models}">Dermanlar</a></li>
-    <li><a th:href="@{/contract}">Kontraktlar</a></li>
+    <li><a th:href="@{/contracts}">Kontraktlar</a></li>
   </ul>
 </div>
 <style>
@@ -113,7 +113,7 @@
       <div class="action-container">
         <span class="menu-icon" th:attr="onclick=|toggleMenu(event, '${contract.id}')|">&#8942;</span>
         <div th:id="'menu-' + ${contract.id}" class="dropdown-menu">
-          <a th:href="@{/contract/edit/{id}(id=${contract.id})}">Üýtget</a>
+          <a th:href="@{/contracts/edit/{id}(id=${contract.id})}">Üýtget</a>
           <br>
 <!--          <a th:href="@{/drugs/delete/{id}(id=${drug.id})}" onclick="return confirm('Siz hakykatdanam pozmak isleýärsiňizmi?');">-->
 <!--            Poz-->
@@ -125,7 +125,7 @@
   </tbody>
 </table>
 
-<a th:href="@{/contract/add-drugs}" class="add-drug-btn">Kontrakt goşmak</a>
+<a th:href="@{/contracts/add-drugs}" class="add-drug-btn">Kontrakt goşmak</a>
 
 
 <script>

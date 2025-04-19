@@ -65,18 +65,26 @@
 
 <div class="container">
     <div>
+        <input type="hidden" id="contractId" th:value="${contractId}" />
         <input type="text" class="search" placeholder="Derman gözle..." oninput="searchItems()">
         <div class="box" id="items">
-            <div class="item" th:each="drug : ${drugs}"
-                 th:id="'drug-' + ${drug.id}"
-                 th:text="${drug.nameDose}+' - '+${drug.firma}"
+            <div th:each="drug : ${drugs}" th:id="'drug-' + ${drug.id}"
+                 th:text="${drug.nameDose} + ' - ' + ${drug.firma}"
+                 th:if="${!drug.selected}" class="item"
                  draggable="true" ondragstart="drag(event)">
             </div>
         </div>
     </div>
     <div class="box" id="dropzone" ondragover="allowDrop(event)" ondrop="drop(event)">
-        Drop selected drugs here
+        <div th:each="drug : ${drugs}" th:id="'drug-' + ${drug.id}"
+             th:text="${drug.nameDose} + ' - ' + ${drug.firma}"
+             th:if="${drug.selected}"
+             class="item"
+             draggable="true" ondragstart="drag(event)">
+            <button class="delete-btn" onclick="deleteItem(this, 'drug-' + [[${drug.id}]])">X</button>
+        </div>
     </div>
+
 </div>
 
 <button onclick="submitSelection()" class="add-drug-btn">Indiki</button>
@@ -145,7 +153,10 @@ function submitSelection() {
         return Number(item.id.replace("drug-", ""));
     });
 
-    fetch("/contract/submit", {
+
+    const contractId = document.getElementById("contractId")?.value;
+
+    fetch("/contracts/submit?contractId="+contractId, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(selectedIds)

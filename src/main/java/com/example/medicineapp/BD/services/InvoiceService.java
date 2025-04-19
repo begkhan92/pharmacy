@@ -21,6 +21,14 @@ public class InvoiceService {
     private InvoiceRepository invoiceRepository;
     private List<Drug> drugs = new ArrayList<>();
 
+    public void setSelectedDrugs(List<Drug> drugs) {
+        this.drugs = drugs;
+    }
+
+    public List<Drug> getSelectedDrugs() {
+        return drugs;
+    }
+
 
     public List<Invoice> filterInvoices(Integer year, Integer month) {
 
@@ -35,6 +43,11 @@ public class InvoiceService {
 
 
         return invoiceRepository.findAll(spec);
+    }
+
+    public Invoice findById(Long id) {
+        return invoiceRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Invoice not found with ID: " + id));
     }
 
     public void saveInvoice(Invoice invoice) {

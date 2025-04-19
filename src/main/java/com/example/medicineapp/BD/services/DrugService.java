@@ -28,8 +28,8 @@ public class DrugService {
         return drugRepository.findById(id).orElseThrow(() -> new RuntimeException("Derman tapylmady"));
     }
 
-    public List<Drug> findByCargoId(Long cargoId) {
-        return drugRepository.findByCargoId(cargoId);
+    public List<Drug> findByInvoiceId(Long invoiceId) {
+        return drugRepository.findByInvoiceId(invoiceId);
     }
 
     public void deleteDrug(Long id) {
@@ -52,14 +52,14 @@ public class DrugService {
         return existingDrug;
     }
 
-    public List<Drug> filterDrugs(Long cargoId, Long contractId, String name, String firma, Boolean isClosed, String contractNumber) {
-        if (cargoId == null && contractId == null) {
-            throw new IllegalArgumentException("both of cargoId and contractId cannot be null");
+    public List<Drug> filterDrugs(Long invoiceId, Long contractId, String name, String firma, Boolean isClosed, String contractNumber) {
+        if (invoiceId == null && contractId == null) {
+            throw new IllegalArgumentException("both of invoiceId and contractId cannot be null");
         }
 
         Specification<Drug> spec = Specification
-                .where(DrugSpecifications.hasCargoId(cargoId))
-                .and(DrugSpecifications.hasContractId(contractId))// Ensure cargoId is checked
+                .where(DrugSpecifications.hasInvoiceId(invoiceId))
+                .and(DrugSpecifications.hasContractId(contractId))
                 .and(DrugSpecifications.hasName(name))
                 .and(DrugSpecifications.hasFirma(firma))
                 .and(DrugSpecifications.hasContactNumber(contractNumber))

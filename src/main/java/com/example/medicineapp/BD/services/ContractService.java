@@ -51,12 +51,12 @@ public class ContractService {
     public Contract updateContract(Long id, Contract updatedContract) {
         Contract existingContract = findById(id);
 //        existingContract.setName(updatedDrug.getName());
-        existingContract.setNumber(existingContract.getNumber());
-        existingContract.setStartDate(existingContract.getStartDate());
-        existingContract.setExpireDate(existingContract.getExpireDate());
-        existingContract.setLicenceNumber(existingContract.getLicenceNumber());
-        existingContract.setImpNumber(existingContract.getImpNumber());
-        existingContract.setBirzaDate(existingContract.getBirzaDate());
+        existingContract.setNumber(updatedContract.getNumber());
+        existingContract.setStartDate(updatedContract.getStartDate());
+        existingContract.setExpireDate(updatedContract.getExpireDate());
+        existingContract.setLicenceNumber(updatedContract.getLicenceNumber());
+        existingContract.setImpNumber(updatedContract.getImpNumber());
+        existingContract.setBirzaDate(updatedContract.getBirzaDate());
 
 
         contractRepository.save(existingContract);

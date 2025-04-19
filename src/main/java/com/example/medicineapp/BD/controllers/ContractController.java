@@ -2,6 +2,7 @@ package com.example.medicineapp.BD.controllers;
 
 import com.example.medicineapp.BD.models.*;
 import com.example.medicineapp.BD.repositories.DrugModelRepository;
+import com.example.medicineapp.BD.repositories.DrugRepository;
 import com.example.medicineapp.BD.services.CargoService;
 import com.example.medicineapp.BD.services.ContractService;
 import com.example.medicineapp.BD.services.DrugService;
@@ -11,6 +12,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.view.RedirectView;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -21,11 +23,13 @@ public class ContractController {
     @Autowired
     private final ContractService contractService;
     private final DrugModelRepository drugModelRepository;
+    private final DrugRepository drugRepository;
     private final DrugService drugService;
 
-    public ContractController(ContractService contractService, DrugModelRepository drugModelRepository, DrugService drugService) {
+    public ContractController(ContractService contractService, DrugModelRepository drugModelRepository, DrugRepository drugRepository, DrugService drugService) {
         this.contractService = contractService;
         this.drugModelRepository = drugModelRepository;
+        this.drugRepository = drugRepository;
         this.drugService = drugService;
     }
     @GetMapping
@@ -53,22 +57,56 @@ public class ContractController {
 
 
     @GetMapping("/add-drugs")
-    public String getDrugs(Model model) {
-        List<DrugModel> drugs = drugModelRepository.findAll();
-        model.addAttribute("drugs", drugs);
+    public String getDrugs(@RequestParam(required = false) Long contractId, Model model) {
+        List<DrugModel> drugModels = drugModelRepository.findAll();
+
+        List<DrugModelDTO> drugDTOs = drugModels.stream().map(dm -> {
+            DrugModelDTO dto = new DrugModelDTO();
+            dto.setId(dm.getId());
+            dto.setNameDose(dm.getNameDose());
+            dto.setFirma(dm.getFirma());
+            dto.setSelected(false); // default
+
+            return dto;
+        }).toList();
+
+        if (contractId != null) {
+            List<Drug> drugsInContract = drugRepository.findByContractId(contractId);
+
+            // Flag DTOs that already exist in this contract
+            for (DrugModelDTO dto : drugDTOs) {
+                boolean exists = drugsInContract.stream().anyMatch(drug ->
+                        drug.getName().equals(dto.getNameDose()) &&
+                                drug.getFirma().equals(dto.getFirma())
+                );
+                dto.setSelected(exists);
+            }
+
+            model.addAttribute("contractId", contractId);
+        }
+
+        model.addAttribute("drugs", drugDTOs);
         return "drug-selection";
     }
 
     @PostMapping("/submit")
-    public RedirectView submitDrugs(@RequestBody List<Long> selectedDrugIds) {
+    public RedirectView submitDrugs(@RequestBody List<Long> selectedDrugIds, @RequestParam(required = false) Long contractId) {
         System.out.println("Received Drug IDs: " + selectedDrugIds); // Debugging
 
         List<DrugModel> selectedDrugs = drugModelRepository.findAllById(selectedDrugIds);
 
+
         contractService.setSelectedDrugs(selectedDrugs);
 
-        return new RedirectView("/contract/add-contract");
+        System.out.println(" Kontract --- -- -- -- -- -- - -  "+contractId);
+
+        if(contractId != null) return new RedirectView("/contracts/edit/" + contractId);
+
+        else
+
+        return new RedirectView("/contracts/add-contract");
     }
+
     @GetMapping("/add-contract")
     public String showAddCargoForm(Model model) {
         model.addAttribute("contract", new Contract());
@@ -84,29 +122,52 @@ public class ContractController {
 
 
         for (DrugModel drugModel : selectedDrugModels) {
-            Drug drug = new Drug();
-            drug.setName(drugModel.getNameDose());
-            drug.setFirma(drugModel.getFirma());
-            contract.addDrug(drug);  // ✅ Use addDrug to maintain bidirectional relationship
+            boolean alreadyExists = contract.getDrugs().stream().anyMatch(drug ->
+                    drug.getName().equals(drugModel.getNameDose()) &&
+                            drug.getFirma().equals(drugModel.getFirma())
+            );
+
+            if (!alreadyExists) {
+                Drug drug = new Drug();
+                drug.setName(drugModel.getNameDose());
+                drug.setFirma(drugModel.getFirma());
+                drug.setContract(contract); // Optional, depending on cascade setup
+                contract.addDrug(drug);     // ✅ Keep bidirectional link
+            }
         }
-
-
-
-
-        // Save Cargo (will also save Drugs due to cascade)
         contractService.saveContract(contract);
-        return "redirect:/contract";
+        return "redirect:/contracts";
     }
-    @GetMapping("/edit/{id}")
-    public String showEditDrugForm(@PathVariable Long id, Model model) {
-        Contract contract = contractService.findById(id);
+    @GetMapping("/edit/{contractId}")
+    public String showEditDrugForm(@PathVariable Long contractId, Model model) {
+        List<DrugModel> selectedDrugModels = contractService.getSelectedDrugs();
+        Contract contract = contractService.findById(contractId);
+        System.out.println(selectedDrugModels.size());
+        for (DrugModel drugModel : selectedDrugModels) {
+            boolean alreadyExists = contract.getDrugs().stream().anyMatch(drug ->
+                    drug.getName().equals(drugModel.getNameDose()) &&
+                            drug.getFirma().equals(drugModel.getFirma())
+            );
+
+            if (!alreadyExists) {
+                Drug drug = new Drug();
+                drug.setName(drugModel.getNameDose());
+                drug.setFirma(drugModel.getFirma());
+                contract.addDrug(drug);
+                drugRepository.save(drug);
+            }
+        }
+        System.out.println("drugs in contract - " + contract.getDrugs().size());
         model.addAttribute("contract", contract);
+        model.addAttribute("contractId", contractId);
         return "edit-contract";
     }
+
+
     @PostMapping("/update/{id}")
     public String updateContract(@PathVariable Long id, @ModelAttribute("contract") Contract updatedContract) {
         Contract newContract = contractService.updateContract(id, updatedContract);
-        return "redirect:/contract";
+        return "redirect:/contracts";
     }
 
 

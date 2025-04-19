@@ -22,9 +22,9 @@ public class Drug {
     private String analizeCertification;
 
     @ManyToOne
-    @JoinColumn(name = "cargo_id")
+    @JoinColumn(name = "invoice_id")
     @JsonBackReference // Allow inserting and updating cargo_id
-    private Cargo cargo;
+    private Invoice invoice;
 
     @ManyToOne
     @JoinColumn(name = "contract_id")
@@ -34,12 +34,12 @@ public class Drug {
 
     private Boolean isClosed;
 
-    public Cargo getCargo() {
-        return cargo;
+    public Invoice getInvoice() {
+        return invoice;
     }
 
-    public void setCargo(Cargo cargo) {
-        this.cargo = cargo;
+    public void setInvoice(Invoice invoice) {
+        this.invoice = invoice;
     }
 
     public Contract getContract() {

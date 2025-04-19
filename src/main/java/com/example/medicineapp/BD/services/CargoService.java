@@ -3,6 +3,7 @@ package com.example.medicineapp.BD.services;
 import com.example.medicineapp.BD.models.Cargo;
 import com.example.medicineapp.BD.models.Drug;
 import com.example.medicineapp.BD.models.DrugModel;
+import com.example.medicineapp.BD.models.Invoice;
 import com.example.medicineapp.BD.repositories.CargoRepository;
 import com.example.medicineapp.BD.repositories.DrugModelRepository;
 import com.example.medicineapp.BD.specifications.CargoSpecification;
@@ -19,10 +20,10 @@ public class CargoService {
 
     @Autowired
     private CargoRepository cargoRepository;
-    private List<Drug> drugs = new ArrayList<>();
+    private List<Invoice> invoices = new ArrayList<>();
 
-    public void setSelectedDrugs(List<Drug> drugs) {
-        this.drugs = drugs;
+    public void setSelectedInvoices(List<Invoice> invoices) {
+        this.invoices = invoices;
     }
 
     public List<Cargo> filterCargos(Integer year, Integer month) {
@@ -43,8 +44,8 @@ public class CargoService {
 
 
 
-    public List<Drug> getSelectedDrugs() {
-        return drugs;
+    public List<Invoice> getSelectedInvoices() {
+        return invoices;
     }
     public Cargo findById(Long id) {
         return cargoRepository.findById(id)

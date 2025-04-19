@@ -24,10 +24,6 @@ public class Cargo {
 
     @OneToMany(mappedBy = "cargo", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
-    private List<Drug> drugs = new ArrayList<>();
-
-    @OneToMany(mappedBy = "cargo", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonManagedReference
     private List<Invoice> invoices = new ArrayList<>();
 
     // Constructors, getters, setters
@@ -55,14 +51,6 @@ public class Cargo {
 
     public void setInvoiceNumber(String invoiceNumber) {
         this.invoiceNumber = invoiceNumber;
-    }
-
-    public List<Drug> getDrugs() {
-        return drugs;
-    }
-
-    public void setDrugs(List<Drug> drugs) {
-        this.drugs = drugs;
     }
 
     public int getNumberOftransport() {
@@ -113,8 +101,8 @@ public class Cargo {
 //        this.drugs = drugs;
 //    }
 
-    public void addDrug(Drug drug) {
-        drugs.add(drug);
-        drug.setCargo(this);
+    public void addInvoice(Invoice invoice) {
+        invoices.add(invoice);
+        invoice.setCargo(this);
     }
 }

@@ -6,7 +6,7 @@
 </head>
 <body>
 <h1>Kontract goşmak</h1>
-<form th:action="@{/contract/save}" th:object="${contract}" method="post">
+<form th:action="@{/contracts/save}" th:object="${contract}" method="post">
   <label>Nomer: <input type="number" th:field="*{number}" /></label><br>
   <label>Başlady: <input type="date" th:field="*{startDate}" /></label><br>
   <label>Gutarýar: <input type="date" th:field="*{expireDate}" /></label><br>

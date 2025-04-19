@@ -10,6 +10,11 @@
   <label>Inwoise nomer: <input type="number" th:field="*{number}" /></label><br>
   <label>Sene: <input type="date" th:field="*{invoiceDate}" /></label><br>
   <button type="submit">Ok</button>
+
+  <div class="add-drug-btn">
+    <button><a th:href="@{/invoices/add-invoice}">Inwois goşmak</a></button>
+    <button><a th:href="@{/invoices/add-invoice}">Inwois goşmak</a></button>
+  </div>
 </form>
 </body>
 </html>

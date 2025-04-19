@@ -1,10 +1,12 @@
 package com.example.medicineapp.BD.models;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
-import java.util.Date;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 public class Invoice {
@@ -19,6 +21,10 @@ public class Invoice {
     @JoinColumn(name = "cargo_id")
     @JsonBackReference // Allow inserting and updating cargo_id
     private Cargo cargo;
+
+    @OneToMany(mappedBy = "invoice", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
+    private List<Drug> drugs = new ArrayList<>();
 
     public Long getId() {
         return id;
@@ -46,5 +52,18 @@ public class Invoice {
 
     public void setCargo(Cargo cargo) {
         this.cargo = cargo;
+    }
+
+    public List<Drug> getDrugs() {
+        return drugs;
+    }
+
+    public void setDrugs(List<Drug> drugs) {
+        this.drugs = drugs;
+    }
+
+    public void addDrug(Drug drug) {
+        drugs.add(drug);
+        drug.setInvoice(this);
     }
 }

@@ -91,7 +91,8 @@ tbody tr:hover {
 }
 
 a {
-    display: block;
+    display: inline-block;
+    margin-top:20px;
     text-align: center;
     color:white;
     text-decoration: none;

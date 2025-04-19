@@ -1,6 +1,7 @@
 package com.example.medicineapp.BD.controllers;
 
 import com.example.medicineapp.BD.models.Cargo;
+import com.example.medicineapp.BD.models.Contract;
 import com.example.medicineapp.BD.models.Drug;
 import com.example.medicineapp.BD.models.Invoice;
 import com.example.medicineapp.BD.repositories.DrugRepository;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.view.RedirectView;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -25,13 +27,16 @@ public class InvoiceController {
     private final CargoService cargoService;
     private final InvoiceService invoiceService;
     private final ContractService contractService;
-    private final DrugService drugRepository;
+    private final DrugService drugService;
+    private final DrugRepository drugRepository;
 
 
-    public InvoiceController(CargoService cargoService, InvoiceService invoiceService, ContractService contractService, DrugService drugRepository) {
+
+    public InvoiceController(CargoService cargoService, InvoiceService invoiceService, ContractService contractService, DrugService drugService, DrugRepository drugRepository) {
         this.cargoService = cargoService;
         this.invoiceService = invoiceService;
         this.contractService = contractService;
+        this.drugService = drugService;
         this.drugRepository = drugRepository;
     }
 
@@ -63,37 +68,69 @@ public class InvoiceController {
         return "list-invoice";
     }
 
-    @PostMapping("/submit")
-    public RedirectView submitDrugs(
-//            @RequestBody List<Long> selectedDrugIds
-    ) {
-//        System.out.println("Received Drug IDs: " + selectedDrugIds); // Debugging
+    @GetMapping("/add-drugs")
+    public String getDrugs(@RequestParam(required = false) Long invoiceId, Model model) {
+        List<Drug> drugs = drugRepository.findAll();
+        List<Contract> contracts = contractService.getAllContract();
 
-//        List<Drug> selectedDrugs = drugRepository.findAllById(selectedDrugIds);
+        List<Drug> invoiceDrugs = new ArrayList<>();
+        if (invoiceId != null) {
+            invoiceDrugs = drugRepository.findByInvoiceId(invoiceId); // Fetch drugs in this cargo
+        }
 
-//        cargoService.setSelectedDrugs(selectedDrugs);
+        model.addAttribute("drugs", drugs);
+        model.addAttribute("contracts", contracts);
+        model.addAttribute("invoiceDrugs", invoiceDrugs); // Pass existing cargo drugs to the view
 
-        return new RedirectView("/cargo/add-cargo");
+        return "contract-selection";
     }
 
-    @GetMapping("/add-invoice")
-    public String showAddCargoForm(Model model) {
-        model.addAttribute("invoice", new Invoice());
-
-//        System.out.println(cargoService.getSelectedDrugs().size());
-        return "add-invoice";
-    }
     @PostMapping("/save")
-    public String saveInvoice(@ModelAttribute("invoice") Invoice invoice) {
+    public String saveInvoiceFromUI(@ModelAttribute("invoice") Invoice invoice) {
 
-//        List<Drug> selectedDrugModels = cargoService.getSelectedDrugs();
-//
-//        for (Drug drug : selectedDrugModels) {
-//            drug = drugRepository.findById(drug.getId()).orElse(drug);
-//            cargo.addDrug(drug);
-//        }
+        List<Drug> selectedDrugModels = invoiceService.getSelectedDrugs();
+
+        for (Drug drug : selectedDrugModels) {
+            drug = drugRepository.findById(drug.getId()).orElse(drug);
+            invoice.addDrug(drug);
+        }
 
         invoiceService.saveInvoice(invoice);
         return "redirect:/invoices";
     }
+
+    @GetMapping("/add-invoice")
+    public String showAddInvoiceForm(Model model) {
+        model.addAttribute("invoice", new Invoice());
+
+        System.out.println(invoiceService.getSelectedDrugs().size());
+        return "add-invoice";
+    }
+//
+//    @PostMapping("/submit")
+//    public RedirectView submitDrugs(@RequestBody List<Long> selectedDrugIds) {
+//        System.out.println("Received Drug IDs: " + selectedDrugIds); // Debugging
+//
+//        List<Drug> selectedDrugs = drugRepository.findAllById(selectedDrugIds);
+//
+//        invoiceService.setSelectedDrugs(selectedDrugs);
+//
+//        return new RedirectView("/cargo/add-cargo");
+//    }
+//
+//    @PostMapping("/submit")
+//    public RedirectView submitDrugs(
+//            @RequestBody List<Long> selectedDrugIds
+//    ) {
+//        System.out.println("Received Drug IDs: " + selectedDrugIds); // Debugging
+//
+//        List<Drug> selectedDrugs = drugRepository.findAllById(selectedDrugIds);
+//
+//        cargoService.setSelectedDrugs(selectedDrugs);
+//
+//        return new RedirectView("/cargo/add-cargo");
+//    }
+
+
+
 }
