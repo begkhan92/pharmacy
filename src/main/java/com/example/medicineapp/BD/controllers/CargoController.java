@@ -142,7 +142,7 @@ public class CargoController {
         List<Invoice> selectedInvoices = cargoService.getSelectedInvoices();
 
         System.out.println("Invoice Size-------"+selectedInvoices.size());
-
+        cargoService.saveCargo(cargo);
         for (Invoice invoice : selectedInvoices) {
             boolean alreadyExists = cargo.getInvoices().stream().anyMatch(i ->
                     invoice.getId()==i.getId() &&
@@ -150,11 +150,12 @@ public class CargoController {
             );
 
             if (!alreadyExists) {// Optional, depending on cascade setup
-                cargo.addInvoice(invoice);     // ✅ Keep bidirectional link
+                invoice.setCargo(cargo);
+                invoiceService.saveInvoice(invoice);
             }
         }
 
-        cargoService.saveCargo(cargo);
+
         return "redirect:/cargos";
     }
 
