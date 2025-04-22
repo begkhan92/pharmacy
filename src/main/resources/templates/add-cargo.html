@@ -6,7 +6,7 @@
 </head>
 <body>
 <h1>Ýük goşmak</h1>
-<form th:action="@{/cargo/save}" th:object="${cargo}" method="post">
+<form th:action="@{/cargos/save}" th:object="${cargo}" method="post">
     <label>Akt Nomer: <input type="text" th:field="*{actNumber}" /></label><br>
     <label>Maşynlaryň sany: <input type="number" th:field="*{numberOftransport}" /></label><br>
     <label>CMR Nomer: <input type="text" th:field="*{CMRNumber}" /></label><br>

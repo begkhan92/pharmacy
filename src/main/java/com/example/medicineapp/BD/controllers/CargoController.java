@@ -13,10 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.view.RedirectView;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Controller
 @RequestMapping("/cargos")
@@ -95,41 +92,72 @@ public class CargoController {
         return "selection-invoice";
     }
 
-// -------saving cargos
-//    @PostMapping("/save")
-//    public String saveCargo(@ModelAttribute("cargo") Cargo cargo) {
-//
-//        List<Drug> selectedDrugModels = cargoService.getSelectedDrugs();
-//
-//        for (Drug drug : selectedDrugModels) {
-//            drug = drugRepository.findById(drug.getId()).orElse(drug);
-//            cargo.addDrug(drug);
-//        }
-//
-//        cargoService.saveCargo(cargo);
-//        return "redirect:/cargo";
-//    }
+    @PostMapping("/submit")
+    public RedirectView submitInvoices(@RequestBody List<Long> selectedInvoiceIds, @RequestParam(required = false) Long cargoId) {
+        List<Invoice> selectedInvoices = invoiceRepository.findAllById(selectedInvoiceIds);
+
+        for (Long id : selectedInvoiceIds){
+//            Optional<Invoice> invoice = invoiceRepository.findById(id);
+//            if()
+            System.out.println("the id is:----"+id);
+        }
+
+        System.out.println("Form UI ids size:-----"+selectedInvoiceIds.size());
+
+        System.out.println("Form UI Invoices size:-----"+selectedInvoices.size());
+
+        cargoService.setSelectedInvoices(selectedInvoices);
+        if(cargoId != null) return new RedirectView("/cargos/edit/" + cargoId);
+        else return new RedirectView("/cargos/add-cargo");
+    }
+
+    @GetMapping("/add-cargo")
+    public String showAddCargoForm(Model model) {
+        model.addAttribute("cargo", new Cargo());
+        return "add-cargo";
+    }
+
+    @GetMapping("/edit/{cargoId}")
+    public String showEditDrugForm(@PathVariable Long cargoId, Model model) {
+        List<Invoice> selectedInvoices = cargoService.getSelectedInvoices();
+        Cargo cargo = cargoService.findById(cargoId);
+        for (Invoice invoice : selectedInvoices) {
+            boolean alreadyExists = cargo.getInvoices().stream().anyMatch(i ->
+                    i.getId()==invoice.getId() &&
+                            i.getNumber() == invoice.getNumber()
+            );
+
+            if (!alreadyExists) {
+                cargo.addInvoice(invoice);
+            }
+        }
+        model.addAttribute("cargo", cargo);
+        model.addAttribute("cargoId", cargoId);
+        return "edit-cargo";
+    }
+
+    @PostMapping("/save")
+    public String saveCargo(@ModelAttribute("cargo") Cargo cargo) {
+
+        List<Invoice> selectedInvoices = cargoService.getSelectedInvoices();
+
+        System.out.println("Invoice Size-------"+selectedInvoices.size());
+
+        for (Invoice invoice : selectedInvoices) {
+            boolean alreadyExists = cargo.getInvoices().stream().anyMatch(i ->
+                    invoice.getId()==i.getId() &&
+                            invoice.getNumber()==i.getNumber()
+            );
+
+            if (!alreadyExists) {// Optional, depending on cascade setup
+                cargo.addInvoice(invoice);     // ✅ Keep bidirectional link
+            }
+        }
+
+        cargoService.saveCargo(cargo);
+        return "redirect:/cargos";
+    }
 
 
-    //   ------ adding new cargo
-//    @GetMapping("/add-cargo")
-//    public String showAddCargoForm(Model model) {
-//        model.addAttribute("cargo", new Cargo());
-//
-//        System.out.println(cargoService.getSelectedDrugs().size());
-//        return "add-cargo";
-//    }
-//
-//    @PostMapping("/submit")
-//    public RedirectView submitDrugs(@RequestBody List<Long> selectedDrugIds) {
-//        System.out.println("Received Drug IDs: " + selectedDrugIds); // Debugging
-//
-//        List<Drug> selectedDrugs = drugRepository.findAllById(selectedDrugIds);
-//
-//        cargoService.setSelectedDrugs(selectedDrugs);
-//
-//        return new RedirectView("/cargo/add-cargo");
-//    }
 
-
-}
+  }

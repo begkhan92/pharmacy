@@ -65,7 +65,7 @@
 
 <div class="container">
     <div>
-        <input type="hidden" id="contractId" th:value="${cargoId}" />
+        <input type="hidden" id="cargoId" th:value="${cargoId}" />
         <input type="text" class="search" placeholder="inwois gözle..." oninput="searchItems()">
         <div class="box" id="items">
             <div th:each="invoice : ${invoices}" th:id="'invoice-' + ${invoice.id}"
@@ -150,7 +150,7 @@ function submitSelection() {
     let selectedItems = document.querySelectorAll("#dropzone .item");
 
     let selectedIds = Array.from(selectedItems).map(item => {
-        return Number(item.id.replace("drug-", ""));
+        return Number(item.id.replace("invoice-", ""));
     });
 
 

@@ -29,6 +29,14 @@ public class Cargo {
     // Constructors, getters, setters
     public Cargo() {}
 
+    public List<Invoice> getInvoices() {
+        return invoices;
+    }
+
+    public void setInvoices(List<Invoice> invoices) {
+        this.invoices = invoices;
+    }
+
     public Cargo(String actNumber) {
         this.actNumber = actNumber;
     }

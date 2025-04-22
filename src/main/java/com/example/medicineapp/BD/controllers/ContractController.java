@@ -108,7 +108,7 @@ public class ContractController {
     }
 
     @GetMapping("/add-contract")
-    public String showAddCargoForm(Model model) {
+    public String showAddContractForm(Model model) {
         model.addAttribute("contract", new Contract());
 
         System.out.println(contractService.getSelectedDrugs().size());
