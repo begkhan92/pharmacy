@@ -1,32 +1,38 @@
 package com.example.medicineapp.BD.controllers;
 
-import com.example.medicineapp.BD.models.Cargo;
-import com.example.medicineapp.BD.models.Drug;
-import com.example.medicineapp.BD.models.DrugModel;
+import com.example.medicineapp.BD.models.*;
 import com.example.medicineapp.BD.repositories.DrugModelRepository;
+import com.example.medicineapp.BD.repositories.DrugRepository;
+import com.example.medicineapp.BD.repositories.InvoiceRepository;
 import com.example.medicineapp.BD.services.CargoService;
-import org.springframework.data.jpa.domain.Specification;
+import com.example.medicineapp.BD.services.ContractService;
+import com.example.medicineapp.BD.services.InvoiceService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
 @Controller
-@RequestMapping("/cargo")
+@RequestMapping("/cargos")
 public class CargoController {
 
     private final CargoService cargoService;
-    private final DrugModelRepository drugModelRepository;
+    private final ContractService contractService;
+    private final InvoiceRepository invoiceRepository;
+    private final InvoiceService invoiceService;
 
-    public CargoController(CargoService cargoService, DrugModelRepository drugModelRepository) {
+
+    public CargoController(CargoService cargoService, ContractService contractService, DrugRepository drugRepository, DrugModelRepository drugModelRepository, InvoiceRepository invoiceRepository, InvoiceService invoiceService) {
         this.cargoService = cargoService;
-        this.drugModelRepository = drugModelRepository;
+        this.contractService = contractService;
+        this.invoiceRepository = invoiceRepository;
+        this.invoiceService = invoiceService;
     }
 
     @GetMapping
@@ -54,55 +60,76 @@ public class CargoController {
         model.addAttribute("year", year);
         model.addAttribute("month", month);
         model.addAttribute("months", months);
-        return "cargo-list";
+        return "list-cargo";
     }
 
-    @GetMapping("/add-drugs")
-    public String getDrugs(Model model) {
-        List<DrugModel> drugs = drugModelRepository.findAll();
-        model.addAttribute("drugs", drugs);
-        return "drug-selection";
-    }
 
-    @PostMapping("/save")
-    public String saveCargo(@ModelAttribute("cargo") Cargo cargo) {
+    @GetMapping("/add-invoices")
+    public String getDrugs(@RequestParam(required = false) Long cargoId, Model model) {
+        List<Invoice> invoices = invoiceRepository.findAll();
 
-        List<DrugModel> selectedDrugModels = cargoService.getSelectedDrugs();
-
-
-        List<Drug> drugs = selectedDrugModels.stream().map(drugModel -> {
-            Drug drug = new Drug();
-            drug.setName(drugModel.getNameDose()); // Set name from DrugModel
-            drug.setFirma(drugModel.getFirma()); // Set firma from DrugModel
-            drug.setCargo(cargo); // Associate with Cargo
-            return drug;
+        List<InvoiceDTO> invoiceDTOs = invoices.stream().map(i -> {
+            InvoiceDTO dto = new InvoiceDTO();
+            dto.setId(i.getId());
+            dto.setNumber(i.getNumber());
+            dto.setSelected(false);
+            return dto;
         }).toList();
 
-        cargo.setDrugs(drugs);
+        if (cargoId != null) {
+            List<Invoice> invoicesInCargo = invoiceRepository.findByCargoId(cargoId);
 
-        // Save Cargo (will also save Drugs due to cascade)
-        cargoService.saveCargo(cargo);
-        return "redirect:/cargo";
+            for (InvoiceDTO dto : invoiceDTOs) {
+                boolean exists = invoicesInCargo.stream().anyMatch(invoice ->
+                        invoice.getId()== dto.getId() && invoice.getNumber() == dto.getNumber()
+                );
+                dto.setSelected(exists);
+            }
+
+            model.addAttribute("cargoId", cargoId);
+
+        }
+
+        model.addAttribute("invoices", invoiceDTOs);// Pass existing cargo drugs to the view
+
+        return "selection-invoice";
     }
 
-    @GetMapping("/add-cargo")
-    public String showAddCargoForm(Model model) {
-        model.addAttribute("cargo", new Cargo());
+// -------saving cargos
+//    @PostMapping("/save")
+//    public String saveCargo(@ModelAttribute("cargo") Cargo cargo) {
+//
+//        List<Drug> selectedDrugModels = cargoService.getSelectedDrugs();
+//
+//        for (Drug drug : selectedDrugModels) {
+//            drug = drugRepository.findById(drug.getId()).orElse(drug);
+//            cargo.addDrug(drug);
+//        }
+//
+//        cargoService.saveCargo(cargo);
+//        return "redirect:/cargo";
+//    }
 
-        System.out.println(cargoService.getSelectedDrugs().size());
-        return "add-cargo";
-    }
 
-    @PostMapping("/submit")
-    public RedirectView submitDrugs(@RequestBody List<Long> selectedDrugIds) {
-        System.out.println("Received Drug IDs: " + selectedDrugIds); // Debugging
-
-        List<DrugModel> selectedDrugs = drugModelRepository.findAllById(selectedDrugIds);
-
-        cargoService.setSelectedDrugs(selectedDrugs);
-
-        return new RedirectView("/cargo/add-cargo");
-    }
+    //   ------ adding new cargo
+//    @GetMapping("/add-cargo")
+//    public String showAddCargoForm(Model model) {
+//        model.addAttribute("cargo", new Cargo());
+//
+//        System.out.println(cargoService.getSelectedDrugs().size());
+//        return "add-cargo";
+//    }
+//
+//    @PostMapping("/submit")
+//    public RedirectView submitDrugs(@RequestBody List<Long> selectedDrugIds) {
+//        System.out.println("Received Drug IDs: " + selectedDrugIds); // Debugging
+//
+//        List<Drug> selectedDrugs = drugRepository.findAllById(selectedDrugIds);
+//
+//        cargoService.setSelectedDrugs(selectedDrugs);
+//
+//        return new RedirectView("/cargo/add-cargo");
+//    }
 
 
 }

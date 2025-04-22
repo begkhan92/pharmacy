@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="eng">
+<head>
+  <title>Kontrakt Üýtgetmek</title>
+  <link rel="stylesheet" type="text/css" th:href="@{/css/styles.css}">
+</head>
+<body>
+<h1>Kontrakt Üýtgetmek</h1>
+
+<form th:action="@{/contracts/update/{id}(id=${contract.id})}" th:object="${contract}" method="post">
+  <label>Nomer: <input type="number" th:field="*{number}" /></label><br>
+  <label>Başlady: <input type="date" th:value="${#temporals.format(contract.startDate, 'yyyy-MM-dd')}" name="startDate" /></label><br>
+  <label>Gutarýar: <input type="date" th:value="${#temporals.format(contract.expireDate, 'yyyy-MM-dd')}" name="expireDate" /></label><br>
+  <label>Lisenziýa: <input type="text" th:field="*{licenceNumber}" /></label><br>
+  <label>Imp: <input type="text" th:field="*{impNumber}" /></label><br>
+  <label>Birža: <input type="date" th:value="${#temporals.format(contract.birzaDate, 'yyyy-MM-dd')}" name="birzaDate" /></label><br>
+  <button type="submit">Üýtget</button>
+</form>
+
+<a th:href="@{/contracts}">Yza</a>
+<a th:href="@{/contracts/add-drugs(contractId=${contract.id})}">Dermanlar</a>
+
+
+</body>
+</html>

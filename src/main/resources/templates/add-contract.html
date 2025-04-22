@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="eng">
+<head>
+  <title>Kontract goşmak</title>
+  <link rel="stylesheet" type="text/css" th:href="@{/css/styles.css}">
+</head>
+<body>
+<h1>Kontract goşmak</h1>
+<form th:action="@{/contracts/save}" th:object="${contract}" method="post">
+  <label>Nomer: <input type="number" th:field="*{number}" /></label><br>
+  <label>Başlady: <input type="date" th:field="*{startDate}" /></label><br>
+  <label>Gutarýar: <input type="date" th:field="*{expireDate}" /></label><br>
+  <label>Imp: <input type="number" th:field="*{impNumber}" required/></label><br>
+  <label>Lisenziýa: <input type="number" th:field="*{licenceNumber}" required/></label><br>
+  <label>Birža sene: <input type="date" th:field="*{birzaDate}" required/></label><br>
+  <button type="submit">Ok</button>
+</form>
+</body>
+</html>

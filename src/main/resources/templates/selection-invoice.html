@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Drug Selection</title>
+    <title>Invoice Saýlamak</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -61,27 +61,27 @@
 </head>
 <body>
 
-<h2>Kontrakta derman goşmak</h2>
+<h2>Ýüke inwois goşmak</h2>
 
 <div class="container">
     <div>
-        <input type="hidden" id="contractId" th:value="${contractId}" />
-        <input type="text" class="search" placeholder="Derman gözle..." oninput="searchItems()">
+        <input type="hidden" id="contractId" th:value="${cargoId}" />
+        <input type="text" class="search" placeholder="inwois gözle..." oninput="searchItems()">
         <div class="box" id="items">
-            <div th:each="drug : ${drugs}" th:id="'drug-' + ${drug.id}"
-                 th:text="${drug.nameDose} + ' - ' + ${drug.firma}"
-                 th:if="${!drug.selected}" class="item"
+            <div th:each="invoice : ${invoices}" th:id="'invoice-' + ${invoice.id}"
+                 th:text="${invoice.number}"
+                 th:if="${!invoice.selected}" class="item"
                  draggable="true" ondragstart="drag(event)">
             </div>
         </div>
     </div>
     <div class="box" id="dropzone" ondragover="allowDrop(event)" ondrop="drop(event)">
-        <div th:each="drug : ${drugs}" th:id="'drug-' + ${drug.id}"
-             th:text="${drug.nameDose} + ' - ' + ${drug.firma}"
-             th:if="${drug.selected}"
+        <div th:each="invoice : ${invoices}" th:id="'invoice-' + ${invoice.id}"
+             th:text="${invoice.number}"
+             th:if="${invoice.selected}"
              class="item"
              draggable="true" ondragstart="drag(event)">
-            <button class="delete-btn" onclick="deleteItem(this, 'drug-' + [[${drug.id}]])">X</button>
+            <button class="delete-btn" onclick="deleteItem(this, 'invoice-' + [[${invoice.id}]])">X</button>
         </div>
     </div>
 
@@ -154,9 +154,9 @@ function submitSelection() {
     });
 
 
-    const contractId = document.getElementById("contractId")?.value;
+    const cargoId = document.getElementById("cargoId")?.value;
 
-    fetch("/contracts/submit?contractId="+contractId, {
+    fetch("/cargos/submit?cargoId="+cargoId, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(selectedIds)

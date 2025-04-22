@@ -1,5 +1,6 @@
 package com.example.medicineapp.BD.controllers;
 
+import com.example.medicineapp.BD.models.Drug;
 import com.example.medicineapp.BD.models.DrugModel;
 import com.example.medicineapp.BD.services.DrugModelService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +32,20 @@ public class DrugModelController {
 
         model.addAttribute("drugModel", new DrugModel());
         return "add-drug-model";
+    }
+
+    @GetMapping("/edit/{id}")
+    public String showEditDrugModelForm(@PathVariable Long id, Model model) {
+        DrugModel drugModel = drugModelService.getDrugById(id);
+        model.addAttribute("drugModel", drugModel);
+        return "edit-drug-model";
+    }
+
+    @PostMapping("/update/{id}")
+    public String updateDrugModel(@PathVariable Long id, @ModelAttribute("drugModel") DrugModel updatedDrugModel) {
+        DrugModel newDrugModel =
+                drugModelService.updateDrugModel(id, updatedDrugModel);
+        return "redirect:/drug-models";
     }
 
     @PostMapping("/save")

@@ -7,18 +7,18 @@
 <body>
 <h1>Derman Üýtgetmek</h1>
 
-<form th:action="@{/drugs/update/{id}(id=${drug.id})}" th:object="${drug}" method="post">
+<form th:action="@{/drugs/update/{id}(id=${drug.id}, contractId=${contractId})}" th:object="${drug}" method="post">
     <label>Ady: <input type="text" th:field="*{name}" /></label><br>
     <label>Производитель: <input type="text" th:field="*{firma}" /></label><br>
     <label>Mukdary: <input type="number" th:field="*{quantity}" /></label><br>
-    <label>Kontrakt: <input type="text" th:field="*{contractNumber}" /></label><br>
-    <label>Öndürilen senesi: <input type="date" th:field="*{productionDate}" /></label><br>
+    <!--    <label>Öndürilen senesi: <input type="date" th:field="*{productionDate}" /></label><br>-->
+    <label>Öndürilen senesi: <input type="date" th:value="${#temporals.format(drug.productionDate, 'yyyy-MM-dd')}" name="productionDate" /></label><br>
     <label>Seriýa Nomer: <input type="text" th:field="*{seriesNumber}" /></label><br>
     <label>Bahasy: <input type="number" th:field="*{price}" step="0.01" /></label><br>
     <button type="submit">Üýtget</button>
 </form>
 
-<a th:href="@{/drugs}">Yza</a>
+<a th:href="@{/drugs?contractId=}+${contractId}">Yza</a>
 
 </body>
 </html>

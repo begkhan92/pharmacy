@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="eng">
+<head>
+    <title>Ýük Üýtgetmek</title>
+    <link rel="stylesheet" type="text/css" th:href="@{/css/styles.css}">
+</head>
+<body>
+<h1>Ýük Üýtgetmek</h1>
+
+<form th:action="@{/cargo/update/{id}(id=${cargo.id})}" th:object="${cargo}" method="post">
+    <label>Akt: <input type="text" th:field="*{actNumber}" /></label><br>
+    <label>Invoice: <input type="text" th:field="*{invoiceNumber}" /></label><br>
+    <label>Maşyn sany: <input type="number" th:field="*{numberOftransport}" /></label><br>
+    <label>CMR Nomer: <input type="text" th:field="*{CMRNumber}" /></label><br>
+    <label>Geldi: <input type="date" th:field="*{dateArrived}" th:value="${#temporals.format(cargo.dateArrived, 'yyyy-MM-dd')}" />
+    </label><br>
+    <button type="submit">Üýtget</button>
+</form>
+
+<a th:href="@{/cargo}">Yza</a>
+
+</body>
+</html>

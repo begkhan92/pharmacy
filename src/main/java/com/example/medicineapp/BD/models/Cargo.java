@@ -1,8 +1,10 @@
 package com.example.medicineapp.BD.models;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -20,9 +22,9 @@ public class Cargo {
     private LocalDate dateClosed;
 //    private Firma firma;
 
-    @OneToMany(cascade = CascadeType.ALL)
-    @JoinColumn(name = "cargo_id")  // This creates a foreign key in DrugModel
-    private List<Drug> drugs;
+    @OneToMany(mappedBy = "cargo", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
+    private List<Invoice> invoices = new ArrayList<>();
 
     // Constructors, getters, setters
     public Cargo() {}
@@ -49,14 +51,6 @@ public class Cargo {
 
     public void setInvoiceNumber(String invoiceNumber) {
         this.invoiceNumber = invoiceNumber;
-    }
-
-    public List<Drug> getDrugs() {
-        return drugs;
-    }
-
-    public void setDrugs(List<Drug> drugs) {
-        this.drugs = drugs;
     }
 
     public int getNumberOftransport() {
@@ -106,4 +100,9 @@ public class Cargo {
 //    public void setDrugs(List<Drug> drugs) {
 //        this.drugs = drugs;
 //    }
+
+    public void addInvoice(Invoice invoice) {
+        invoices.add(invoice);
+        invoice.setCargo(this);
+    }
 }

@@ -6,18 +6,60 @@
 </head>
 <body>
 <h1>Derman Goşmak</h1>
-<form th:action="@{/drugs/save}" th:object="${drug}" method="post">
+<form th:action="@{/drugs/save}" th:object="${drug}" method="post" autocomplete="off">
     <input type="hidden" name="cargoId" th:value="${cargoId}" />
+    <input type="hidden" name="contractId" th:value="${contractId}" />
 
-    <label>Ady: <input type="text" th:field="*{name}" required /></label><br>
-    <label>Öndüriji: <input type="text" th:field="*{firma}" /></label><br>
+    <!--    <label>Ady: <input type="text" th:field="*{name}" required /></label><br>-->
+    <!--    <label>Öndüriji: <input type="text" th:field="*{firma}" /></label><br>-->
+    <label>Derman: <input type="text" id="drugInput" list="drugList" placeholder="Derman gözle..." oninput="fetchDrugs()" onchange="setDrugId()">
+        <datalist id="drugList"></datalist></label>
+    <input type="hidden" id="selectedDrugId" name="drugId">
+
     <label>Mukdary: <input type="number" th:field="*{quantity}" /></label><br>
-    <label>Kontrakt: <input type="text" th:field="*{contractNumber}" /></label><br>
     <label>Öndürilen senesi: <input type="date" th:field="*{productionDate}" /></label><br>
     <label>Seriýa Nomer: <input type="text" th:field="*{seriesNumber}" /></label><br>
     <label>Bahasy: <input type="number" th:field="*{price}" step="0.01" /></label><br>
 
     <button type="submit">Ok</button>
 </form>
+
+<script>
+    let drugData = []; // Store fetched drugs globally
+
+async function fetchDrugs() {
+    const query = document.getElementById("drugInput").value;
+    if (query.length < 2) return;
+
+    const response = await fetch(`/drugs/search?query=${query}`);
+    drugData = await response.json(); // Store in global variable
+    const dataList = document.getElementById("drugList");
+
+    dataList.innerHTML = ""; // Clear previous options
+    drugData.forEach(drug => {
+        let option = document.createElement("option");
+        option.value = `${drug.nameDose} - ${drug.firma}`;
+        option.dataset.id = drug.id; // Store ID
+        dataList.appendChild(option);
+    });
+    console.log(drugData);
+}
+    function setDrugId() {
+    const input = document.getElementById("drugInput").value;
+    const selectedDrugId = document.getElementById("selectedDrugId");
+
+    // Find selected drug in stored `drugData`
+    const matchedDrug = drugData.find(drug => `${drug.nameDose} - ${drug.firma}` === input);
+    console.log(input);
+
+
+    if (matchedDrug) {
+        selectedDrugId.value = matchedDrug.id; // Set hidden input value
+        console.log("Selected Drug ID:", matchedDrug.id);
+    } else {
+        selectedDrugId.value = ""; // Clear if no match
+    }
+}
+</script>
 </body>
 </html>

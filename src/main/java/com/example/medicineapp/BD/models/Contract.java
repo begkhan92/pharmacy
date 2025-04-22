@@ -1,8 +1,10 @@
 package com.example.medicineapp.BD.models;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -11,12 +13,12 @@ public class Contract {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToMany(cascade = CascadeType.ALL)
-    @JoinColumn(name = "contract_id")
-    private List<Drug> drugs;
+    @OneToMany(mappedBy = "contract", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
+    private List<Drug> drugs = new ArrayList<>();
 
     private int number;
-     private LocalDate startDate;
+    private LocalDate startDate;
     private LocalDate expireDate;
     private int licenceNumber;
     private int impNumber;
@@ -89,5 +91,10 @@ public class Contract {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public void addDrug(Drug drug) {
+        drugs.add(drug);
+        drug.setContract(this);
     }
 }

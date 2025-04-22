@@ -1,11 +1,12 @@
 package com.example.medicineapp.BD.models;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import jakarta.persistence.*;
 
-import java.util.Date;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 public class Invoice {
@@ -14,7 +15,16 @@ public class Invoice {
     private Long id;
 
     private int number;
-    private Date invoiceDate;
+    private LocalDate invoiceDate;
+
+    @ManyToOne
+    @JoinColumn(name = "cargo_id")
+    @JsonBackReference // Allow inserting and updating cargo_id
+    private Cargo cargo;
+
+    @OneToMany(mappedBy = "invoice", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
+    private List<Drug> drugs = new ArrayList<>();
 
     public Long getId() {
         return id;
@@ -28,11 +38,32 @@ public class Invoice {
         this.number = number;
     }
 
-    public Date getInvoiceDate() {
+    public LocalDate getInvoiceDate() {
         return invoiceDate;
     }
 
-    public void setInvoiceDate(Date invoiceDate) {
+    public void setInvoiceDate(LocalDate invoiceDate) {
         this.invoiceDate = invoiceDate;
+    }
+
+    public Cargo getCargo() {
+        return cargo;
+    }
+
+    public void setCargo(Cargo cargo) {
+        this.cargo = cargo;
+    }
+
+    public List<Drug> getDrugs() {
+        return drugs;
+    }
+
+    public void setDrugs(List<Drug> drugs) {
+        this.drugs = drugs;
+    }
+
+    public void addDrug(Drug drug) {
+        drugs.add(drug);
+        drug.setInvoice(this);
     }
 }

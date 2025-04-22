@@ -8,7 +8,8 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 @Repository
 public interface DrugRepository extends JpaRepository<Drug, Long>, JpaSpecificationExecutor<Drug> {
-    List<Drug> findByCargoId(Long cargoId);
+    List<Drug> findByInvoiceId(Long InvoiceId);
+    List<Drug> findByContractId(Long contractId);
 
 }
 

@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" th:href="@{/css/navbar.css}">
+    <title>Drug Selection</title>
+    <style>
+        :root {
+            --contract-color: #007bff;
+            --contract-drug-color: #17a2b8;
+            --selected-drug-color: #28a745;
+        }
+
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background-color: #f4f8fc;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        h2 {
+            margin-bottom: 20px;
+        }
+
+        .container {
+            display: flex;
+            gap: 20px;
+            width: 90%;
+            height: 70vh;
+            justify-content: center;
+        }
+
+        .zone {
+            background: #fff;
+            border: 1px solid #ccc;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            max-height: 100%;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+
+        .zone h3 {
+            background-color: #eee;
+            padding: 10px;
+            margin: 0;
+            text-align: center;
+        }
+
+        .search-bar {
+            padding: 10px;
+            border: none;
+            border-bottom: 1px solid #ccc;
+            font-size: 14px;
+        }
+
+        .box {
+            overflow-y: auto;
+            padding: 10px;
+            flex: 1;
+        }
+
+        .item {
+            padding: 10px;
+            margin: 8px 0;
+            border-radius: 5px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 14px;
+            color: white;
+            cursor: pointer;
+        }
+
+        .contracts .item {
+            background-color: var(--contract-color);
+        }
+
+        .contract-drugs .item {
+            background-color: var(--contract-drug-color);
+        }
+
+        .dropzone .item {
+            background-color: var(--selected-drug-color);
+            position: relative;
+        }
+
+        .dropzone .item:hover::after {
+            content: attr(data-contract-name);
+            position: absolute;
+            top: -25px;
+            left: 0;
+            background: rgba(0, 0, 0, 0.75);
+            color: white;
+            padding: 5px 8px;
+            font-size: 12px;
+            border-radius: 5px;
+            white-space: nowrap;
+        }
+
+        .delete-btn {
+            background: rgba(255, 0, 0, 0.85);
+            border: none;
+            color: white;
+            font-size: 12px;
+            padding: 2px 6px;
+            cursor: pointer;
+            border-radius: 3px;
+            margin-left: 10px;
+        }
+
+        .add-drug-btn {
+            margin-top: 20px;
+            padding: 10px 30px;
+            background-color: #28a745;
+            color: white;
+            font-size: 16px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .item.selected {
+            outline: 2px solid gold;
+        }
+    </style>
+</head>
+<body>
+<div class="navbar">
+    <div class="logo">BD</div>
+    <ul>
+        <li><a th:href="@{/}">Baş sahypa</a></li>
+        <li><a th:href="@{/cargos}">Ýükler</a></li>
+        <li><a th:href="@{/drug-models}">Dermanlar</a></li>
+        <li><a th:href="@{/contracts}">Kontraktlar</a></li>
+    </ul>
+</div>
+
+<h2 style="padding-top: 70px;">Ýüke derman goşmak</h2>
+
+<div class="container">
+    <!-- Contracts -->
+    <div class="zone contracts">
+        <h3>Kontraktlar</h3>
+        <input type="text" class="search-bar" placeholder="Kontrakt gözle..." oninput="searchZone('contracts')">
+        <div class="box" id="contracts">
+            <div class="item" th:each="contract : ${contracts}"
+                 th:id="'contract-' + ${contract.id}"
+                 onclick="selectContract(this)">
+                <span>№ <strong><i th:text="${contract.number}"></i></strong></span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Contract Drugs -->
+    <div class="zone contract-drugs">
+        <h3>Kontraktdaky dermanlar</h3>
+        <input type="text" class="search-bar" placeholder="Derman gözle..." oninput="searchZone('contract-drugs')">
+        <div class="box" id="contract-drugs">
+            <!-- Filled dynamically -->
+        </div>
+    </div>
+
+    <!-- Dropzone -->
+    <div class="zone dropzone">
+        <h3>Saýlanan dermanlar</h3>
+        <input type="text" class="search-bar" placeholder="Saýlanan derman gözle..." oninput="searchZone('dropzone')">
+        <div class="box" id="dropzone">
+            <div th:each="drug : ${selectedDrugs}"
+                 th:id="'drug-' + ${drug.id}"
+                 class="item drug-item"
+                 th:data-id="${drug.id}"
+                 th:data-contract-id="${drug.invoice.id}"
+                 th:data-contract-name="'Kontrakt №' + ${drug.invoice.id}">
+                <span th:text="${drug.name} + ' - ' + ${drug.firma}"></span>
+                <input type="number" class="qty-input" min="1" value="1" style="width: 50px; margin-left: 10px;" onchange="updateRemainingQuantity(this, [[${drug.id}]])">
+                <button class='delete-btn' onclick='deleteItem(this, "drug-" + [[${drug.id}]])'>X</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<button onclick="submitSelection()" class="add-drug-btn">Indiki</button>
+<script>
+    function searchZone(zoneId) {
+        const input = document.querySelector(`.${zoneId} .search-bar`).value.toLowerCase();
+        const items = document.querySelectorAll(`#${zoneId} .item`);
+        items.forEach(item => {
+            item.style.display = item.innerText.toLowerCase().includes(input) ? "flex" : "none";
+        });
+    }
+
+    function selectContract(element) {
+        document.querySelectorAll("#contracts .item").forEach(item => item.classList.remove("selected"));
+        element.classList.add("selected");
+
+        let contractId = element.id.replace("contract-", "");
+        fetch(`/contracts/${contractId}/drugs`)
+            .then(response => response.json())
+            .then(drugs => {
+                let contractDrugsBox = document.getElementById("contract-drugs");
+                contractDrugsBox.innerHTML = "";
+
+                drugs.forEach(drug => {
+                    let item = document.createElement("div");
+                    item.className = "item";
+                    item.id = "available-" + drug.id;
+                    item.dataset.original = drug.quantity;
+                    item.dataset.remaining = drug.quantity;
+                    item.dataset.contractId = contractId;
+                    item.dataset.contractName = "Kontrakt №" + contractId;
+                    item.style.cursor = "pointer";
+                    item.innerText = `${drug.name} / ${drug.firma} - ${drug.quantity} sany`;
+
+                    item.onclick = () => {
+                        let remaining = parseInt(item.dataset.remaining);
+                        if (remaining > 0) {
+                            const inputQty = prompt(`Girizmeli mukdary (galan: ${remaining}):`, "1");
+                            const qty = parseInt(inputQty);
+                            if (!isNaN(qty) && qty > 0 && qty <= remaining) {
+                                item.dataset.remaining = remaining - qty;
+                                updateAvailabilityText(item, drug);
+
+                                const selectedItem = document.createElement("div");
+                                selectedItem.className = "item";
+                                selectedItem.id = "drug-" + drug.id + "-" + Date.now();
+                                selectedItem.dataset.id = drug.id;
+                                selectedItem.dataset.contractId = contractId;
+                                selectedItem.dataset.contractName = "Kontrakt №" + contractId;
+
+                                selectedItem.innerHTML = `
+                                    <span>${drug.name} / ${drug.firma}</span>
+                                    <input type="number" class="qty-input" min="0" max="${qty}" value="${qty}" style="width: 50px; margin-left: 10px;" onchange="updateRemainingFromInput(this, ${drug.id})">
+                                    <button class='delete-btn' onclick='deleteItem(this, ${drug.id})'>X</button>
+                                `;
+
+                                document.getElementById("dropzone").appendChild(selectedItem);
+
+                                if (remaining - qty <= 0) item.style.display = "none";
+
+                                validateSelection();
+                            }
+                        }
+                    };
+
+                    contractDrugsBox.appendChild(item);
+                });
+            });
+    }
+
+    function updateAvailabilityText(item, drug) {
+        const remaining = parseInt(item.dataset.remaining);
+        item.innerText = `${drug.name} / ${drug.firma} - ${remaining} sany`;
+    }
+
+    function updateRemainingFromInput(input, drugId) {
+        const dropzoneItems = document.querySelectorAll(`#dropzone .item`);
+        const contractItem = document.getElementById(`available-${drugId}`);
+        let totalQty = 0;
+
+        dropzoneItems.forEach(el => {
+            if (el.dataset.id == drugId) {
+                const qtyInput = el.querySelector(".qty-input");
+                const qty = parseInt(qtyInput.value) || 0;
+
+                if (qty === 0) {
+                    el.remove();
+                } else {
+                    totalQty += qty;
+                }
+            }
+        });
+
+        if (contractItem) {
+            const original = parseInt(contractItem.dataset.original);
+            const remaining = original - totalQty;
+            contractItem.dataset.remaining = remaining;
+
+            if (remaining > 0) {
+                contractItem.style.display = "flex";
+            } else {
+                contractItem.style.display = "none";
+            }
+
+            updateAvailabilityText(contractItem, {
+                id: drugId,
+                name: contractItem.innerText.split(" / ")[0],
+                firma: contractItem.innerText.split(" / ")[1]?.split(" - ")[0]
+            });
+        }
+
+        validateSelection();
+    }
+
+    function deleteItem(button, drugId) {
+        const item = button.closest(".item");
+        const qty = parseInt(item.querySelector(".qty-input").value) || 0;
+        item.remove();
+
+        const contractItem = document.getElementById(`available-${drugId}`);
+        if (contractItem) {
+            const remaining = parseInt(contractItem.dataset.remaining);
+            contractItem.dataset.remaining = remaining + qty;
+            updateRemainingFromInput(null, drugId);
+        }
+    }
+
+    function validateSelection() {
+        let valid = true;
+        const dropzoneItems = document.querySelectorAll("#dropzone .item");
+
+        const quantities = {};
+        dropzoneItems.forEach(item => {
+            const drugId = item.dataset.id;
+            const qty = parseInt(item.querySelector(".qty-input")?.value || 0);
+            if (!quantities[drugId]) quantities[drugId] = 0;
+            quantities[drugId] += qty;
+        });
+
+        dropzoneItems.forEach(item => {
+            const drugId = item.dataset.id;
+            const qtyInput = item.querySelector(".qty-input");
+            const qty = parseInt(qtyInput?.value || 0);
+
+            const contractItem = document.getElementById(`available-${drugId}`);
+            const original = parseInt(contractItem?.dataset.original || 0);
+            const totalSelected = quantities[drugId];
+
+            if (totalSelected > original) {
+                item.style.backgroundColor = "#ff4d4f";
+                valid = false;
+            } else {
+                item.style.backgroundColor = "var(--selected-drug-color)";
+            }
+        });
+
+<!--        document.querySelector(".add-drug-btn").disabled = !valid;-->
+    }
+
+    function submitSelection() {
+        const selectedDrugs = [];
+        document.querySelectorAll('#dropzone .item').forEach(div => {
+            const id = parseInt(div.dataset.id);
+            const quantity = parseInt(div.querySelector('input').value);
+            if (quantity > 0) {
+                selectedDrugs.push({ id, quantity });
+            }
+        });
+
+        console.log("Sending selected drugs:", selectedDrugs);
+
+        fetch('/invoices/submit', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(selectedDrugs)
+        }).then(response => {
+            if (response.redirected) {
+                window.location.href = response.url;
+            } else {
+                return response.text().then(text => alert(text));
+            }
+        });
+    }
+</script>
+
+
+</body>
+</html>

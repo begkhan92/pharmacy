@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="eng">
+<head>
+  <title>Inwois goşmak</title>
+  <link rel="stylesheet" type="text/css" th:href="@{/css/styles.css}">
+</head>
+<body>
+<h1>Inwois goşmak</h1>
+<form th:action="@{/invoices/save}" th:object="${invoice}" method="post">
+  <label>Nomer: <input type="number" th:field="*{number}" /></label><br>
+  <label>Senesi: <input type="date" th:field="*{invoiceDate}" required/></label><br>
+  <button type="submit">Ok</button>
+</form>
+</body>
+</html>

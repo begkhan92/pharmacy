@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="eng">
+<head>
+    <title>Inwoislar</title>
+    <link rel="stylesheet" type="text/css" th:href="@{/css/navbar.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{/css/styles.css}">
+</head>
+
+<style>
+  .action-container {
+      position: relative;
+      display: inline-block;
+  }
+
+  .menu-icon {
+      cursor: pointer;
+      font-size: 20px;
+      padding: 5px;
+  }
+
+  .dropdown-menu {
+      display: none;
+      position: absolute;
+      right: 0;
+      background: white;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+      padding: 5px;
+      z-index: 10;
+      min-width: 100px;
+  }
+
+  .dropdown-menu a {
+      display: block;
+      padding: 5px 5px;
+      text-decoration: none;
+      color: black;
+  }
+
+  .dropdown-menu a:hover {
+      background: #f0f0f0;
+  }
+
+  .show {
+      display: block;
+  }
+</style>
+<body>
+<div class="navbar">
+    <div class="logo">BD</div>
+    <ul>
+        <li><a th:href="@{/}">Baş sahypa</a></li>
+        <li><a th:href="@{/cargos}">Ýükler</a></li>
+        <li><a th:href="@{/drug-models}">Dermanlar</a></li>
+        <li><a th:href="@{/contracts}">Kontraktlar</a></li>
+        <li><a th:href="@{/invoices}">Inwoislar</a></li>
+    </ul>
+</div>
+
+<form style="margin-top:70px;" th:action="@{/invoices}" method="get">
+
+
+    <label>Ýyl:
+        <input type="number" name="year" th:value="${year}" style="width: 75px;" />
+    </label>
+
+    <label>Aýy:
+        <select name="month">
+            <option value="" th:selected="${month == null}">-- Aý saýla --</option>
+            <option th:each="entry : ${months.entrySet()}"
+                    th:value="${entry.key}"
+                    th:text="${entry.value}"
+                    th:selected="${entry.key == month}">
+            </option>
+        </select>
+    </label>
+
+
+
+
+    <button type="submit">Filter</button>
+</form>
+
+<table>
+    <thead>
+    <tr>
+        <th>№</th> <!-- Column for numbering -->
+        <th>Senesi</th>
+        <th>Nomer</th>
+        <th>Ýük</th>
+        <th>&#8942;</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="invoice, iterStat : ${invoices}">
+        <td th:text="${iterStat.count}"></td> <!-- Display row number -->
+        <!--    <td th:text="${invoice.invoiceDate}"></td>-->
+        <td>
+            <a href="#" th:text="${invoice.invoiceDate}"></a>
+            <!--                  th:href="@{/drugs(cargoId=${cargo.id})}"-->
+
+        </td>
+        <td th:text="${invoice.number}"></td>
+
+        <td th:text="${invoice.cargo?.actNumber}"></td>
+
+
+        <td>
+            <!--      <div class="action-container">-->
+            <!--        <span class="menu-icon" th:attr="onclick=|toggleMenu(event, '${cargo.id}')|">&#8942;</span>-->
+            <!--        <div th:id="'menu-' + ${cargo.id}" class="dropdown-menu">-->
+            <!--          <a th:href="@{cargo/add-drugs(cargoId=${cargo.id})}">Üýtget</a>-->
+            <!--          <br>-->
+            <!--          &lt;!&ndash;          <a th:href="@{/drugs/delete/{id}(id=${drug.id})}" onclick="return confirm('Siz hakykatdanam pozmak isleýärsiňizmi?');">&ndash;&gt;-->
+            <!--          &lt;!&ndash;            Poz&ndash;&gt;-->
+            <!--          &lt;!&ndash;          </a>&ndash;&gt;-->
+            <!--        </div>-->
+            <!--      </div>-->
+        </td>
+    </tr>
+    </tbody>
+</table>
+
+<a th:href="@{/invoices/add-drugs}" class="add-drug-btn">Inwois goşmak</a>
+
+<script>
+  function toggleMenu(event, id) {
+      event.stopPropagation(); // Prevent event from bubbling
+      let menu = document.getElementById("menu-" + id);
+
+      // Close all other menus
+      document.querySelectorAll('.dropdown-menu').forEach(menu => {
+          menu.classList.remove('show');
+      });
+
+      // Toggle the clicked menu
+      if (menu) {
+          menu.classList.toggle("show");
+      }
+  }
+
+  window.onclick = function() {
+      document.querySelectorAll('.dropdown-menu').forEach(menu => {
+          menu.classList.remove('show');
+      });
+  };
+</script>
+</body>
+</html>

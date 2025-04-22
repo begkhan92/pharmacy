@@ -12,9 +12,14 @@ public class DrugSpecifications {
                         criteriaBuilder.like(root.get("name"), "%" + name + "%");
     }
 
-    public static Specification<Drug> hasCargoId(Long cargoId) {
+    public static Specification<Drug> hasInvoiceId(Long invoiceId) {
         return (root, query, criteriaBuilder) ->
-                cargoId == null ? null : criteriaBuilder.equal(root.get("cargo").get("id"), cargoId);
+                invoiceId == null ? null : criteriaBuilder.equal(root.get("invoice").get("id"), invoiceId);
+    }
+
+    public static Specification<Drug> hasContractId(Long contractId) {
+        return (root, query, criteriaBuilder) ->
+                contractId == null ? null : criteriaBuilder.equal(root.get("contract").get("id"), contractId);
     }
 
 

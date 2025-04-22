@@ -2,6 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org" lang="eng">
 <head>
   <title>Dermanlar</title>
+  <link rel="stylesheet" type="text/css" th:href="@{/css/navbar.css}">
   <link rel="stylesheet" type="text/css" th:href="@{/css/styles.css}">
   <script>
         function toggleMenu(event, id) {
@@ -67,15 +68,28 @@
     </style>
 </head>
 <body>
+<div class="navbar">
+  <div class="logo">BD</div>
+  <ul>
+    <li><a th:href="@{/}">Baş sahypa</a></li>
+    <li><a th:href="@{/cargo}">Ýükler</a></li>
+    <li><a th:href="@{/drug-models}">Dermanlar</a></li>
+    <li><a th:href="@{/contract}">Kontraktlar</a></li>
+  </ul>
+</div>
 
-<form th:action="@{/drugs}" method="get">
-  <label>Ýük ID:
+<form style="margin-top:70px;" th:action="@{/drugs}" method="get">
+  <label hidden="hidden">Ýük ID:
     <input type="number" name="cargoId" th:value="${cargoId}" style="width: 50px;" readonly />
+  </label>
+
+  <label hidden="hidden">Kontrakt ID:
+    <input type="number" name="contractId" th:value="${contractId}" style="width: 50px;" readonly />
   </label>
 
   <label>Ady: <input type="text" name="name" /></label>
   <label>Производитель: <input type="text" name="firma" /></label>
-  <label>Kontrakt: <input type="text" name="contractNumber"/></label>
+  <label>Kontrakt: <input type="text" name="contract.number"/></label>
   <label>Ýapyldy:
     <select name="isClosed">
       <option value="">-</option>
@@ -89,8 +103,9 @@
 <table>
   <thead>
   <tr>
+    <th>№</th>
     <th>Ady, dozasy</th>
-<!--    <th>Dozasy</th>-->
+    <!--    <th>Dozasy</th>-->
     <th>Производитель</th>
     <th>Mukdary</th>
     <th>Kontrakt</th>
@@ -99,16 +114,17 @@
     <th>Seriýa Nomer</th>
     <th>Bahasy</th>
     <th>Analiz Sert.</th>
-    <th>Amallar</th>
+    <th>&#8942;</th>
   </tr>
   </thead>
   <tbody>
-  <tr th:each="drug : ${drugs}">
+  <tr th:each="drug, iterStat : ${drugs}">
+    <td th:text="${iterStat.count}"></td>
     <td th:text="${drug.name}"></td>
-<!--    <td th:text="${drug.dose}"></td>-->
+    <!--    <td th:text="${drug.dose}"></td>-->
     <td th:text="${drug.firma}"></td>
     <td th:text="${drug.quantity}"></td>
-    <td th:text="${drug.contractNumber}"></td>
+    <td th:text="${drug.contract.number}"></td>
     <td th:text="${drug.productionDate}"></td>
     <td th:text="${drug.expireDate}"></td>
     <td th:text="${drug.seriesNumber}"></td>
@@ -119,9 +135,9 @@
       <div class="action-container">
         <span class="menu-icon" th:attr="onclick=|toggleMenu(event, '${drug.id}')|">&#8942;</span>
         <div th:id="'menu-' + ${drug.id}" class="dropdown-menu">
-          <a th:href="@{/drugs/edit/{id}(id=${drug.id})}">Üýtget</a>
+          <a th:href="@{/drugs/edit/{id}(id=${drug.id}, contractId=${contractId})}">Üýtget</a>
           <br>
-          <a th:href="@{/drugs/delete/{id}(id=${drug.id})}" onclick="return confirm('Siz hakykatdanam pozmak isleýärsiňizmi?');">
+          <a th:href="@{/drugs/delete/{id}(id=${drug.id}, contractId=${contractId})}" onclick="return confirm('Siz hakykatdanam pozmak isleýärsiňizmi?');">
             Poz
           </a>
         </div>
@@ -131,7 +147,14 @@
   </tbody>
 </table>
 
-<a th:href="@{/drugs/add(cargoId=${cargoId})}" class="add-drug-btn">Derman goşmak</a>
+<!--<th:block th:if="${cargoId != null}">-->
+<!--  <a th:href="@{/drugs/add(cargoId=${cargoId})}" class="add-drug-btn">Derman goşmak</a>-->
+<!--</th:block>-->
+
+<!--<th:block th:if="${contractId != null}">-->
+<!--  <a th:href="@{/drugs/add(contractId=${contractId})}" class="add-drug-btn">Derman goşmak</a>-->
+<!--</th:block>-->
+<a th:href="@{/drugs/add(contractId=${contractId})}" class="add-drug-btn">Derman goşmak</a>
 
 
 </body>

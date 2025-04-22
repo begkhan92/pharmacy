@@ -3,6 +3,7 @@ package com.example.medicineapp.BD.services;
 import com.example.medicineapp.BD.models.Cargo;
 import com.example.medicineapp.BD.models.Drug;
 import com.example.medicineapp.BD.models.DrugModel;
+import com.example.medicineapp.BD.models.Invoice;
 import com.example.medicineapp.BD.repositories.CargoRepository;
 import com.example.medicineapp.BD.repositories.DrugModelRepository;
 import com.example.medicineapp.BD.specifications.CargoSpecification;
@@ -19,17 +20,17 @@ public class CargoService {
 
     @Autowired
     private CargoRepository cargoRepository;
-    private List<DrugModel> drugs = new ArrayList<>();
+    private List<Invoice> invoices = new ArrayList<>();
 
-    public void setSelectedDrugs(List<DrugModel> drugs) {
-        this.drugs = drugs;
+    public void setSelectedInvoices(List<Invoice> invoices) {
+        this.invoices = invoices;
     }
 
     public List<Cargo> filterCargos(Integer year, Integer month) {
 
 
         Specification<Cargo> spec = Specification
-                    .where(CargoSpecification.hasDateArrivedInYearAndMonth(year, month)); // Ensure cargoId is checked
+                .where(CargoSpecification.hasDateArrivedInYearAndMonth(year, month)); // Ensure cargoId is checked
 //                .and(DrugSpecifications.hasName(name))
 //                .and(DrugSpecifications.hasFirma(firma))
 //                .and(DrugSpecifications.hasContactNumber(contractNumber))
@@ -40,8 +41,11 @@ public class CargoService {
         return cargoRepository.findAll(spec);
     }
 
-    public List<DrugModel> getSelectedDrugs() {
-        return drugs;
+
+
+
+    public List<Invoice> getSelectedInvoices() {
+        return invoices;
     }
     public Cargo findById(Long id) {
         return cargoRepository.findById(id)
