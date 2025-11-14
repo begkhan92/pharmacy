@@ -6,14 +6,35 @@
 </head>
 <body>
 <h1>Kontract goşmak</h1>
+
 <form th:action="@{/contracts/save}" th:object="${contract}" method="post">
-  <label>Nomer: <input type="number" th:field="*{number}" /></label><br>
-  <label>Başlady: <input type="date" th:field="*{startDate}" /></label><br>
-  <label>Gutarýar: <input type="date" th:field="*{expireDate}" /></label><br>
-  <label>Imp: <input type="number" th:field="*{impNumber}" required/></label><br>
-  <label>Lisenziýa: <input type="number" th:field="*{licenceNumber}" required/></label><br>
-  <label>Birža sene: <input type="date" th:field="*{birzaDate}" required/></label><br>
-  <button type="submit">Ok</button>
+  <label>Akt nomer: <input type="text" th:field="*{actNumber}" /></label><br>
+  <label>Gelen senesi: <input type="date" th:field="*{arrivedAt}" /></label><br>
+  <label>Maşynlaryň sany: <input type="number" th:field="*{numberOfCars}"/></label><br>
+<br>
+  <table border="1">
+    <tr>
+      <th>Ady / Dozasy</th>
+      <th>Firma</th>
+      <th>Birligi</th>
+      <th>Mukdary</th>
+      <th>Bahasy</th>
+    </tr>
+    <tr th:each="drugModel, iterStat : ${selectedDrugs}">
+      <td th:text="${drugModel.nameDose}"></td>
+      <td th:text="${drugModel.firma}"></td>
+      <td th:text="${drugModel.unit}"></td>
+      <td>
+        <input type="number" name="quantities" min="0"/>
+        <input type="hidden" name="drugModelIds" th:value="${drugModel.id}" />
+      </td>
+      <td>
+        <input type="number" name="priceList"/>
+      </td>
+    </tr>
+  </table>
+
+  <button type="submit" class="add-drug-btn">Ok</button>
 </form>
 </body>
 </html>

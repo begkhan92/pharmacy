@@ -47,6 +47,11 @@ public class DrugModelController {
                 drugModelService.updateDrugModel(id, updatedDrugModel);
         return "redirect:/drug-models";
     }
+    @GetMapping("/delete/{id}")
+    public String deleteDrug(@PathVariable Long id) {
+        drugModelService.deleteModelDrug(id);
+        return "redirect:/drug-models";
+    }
 
     @PostMapping("/save")
     public String saveDrug(@ModelAttribute("drug") DrugModel drug, @RequestParam("firma") String firma) {

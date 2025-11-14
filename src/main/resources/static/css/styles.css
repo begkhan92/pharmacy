@@ -110,3 +110,16 @@ a:hover {
     background: #1e3a8a;
     color: white;
 }
+
+tbody tr.warning-row,
+tbody tr.warning-row:hover {
+    background-color: #FFECB3 !important;
+}
+
+tbody tr.not-closed,
+tbody tr.not-closed:hover {
+    background-color: #FFCDD2 !important;
+}
+
+
+

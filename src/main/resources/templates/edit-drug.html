@@ -2,18 +2,52 @@
 <html xmlns:th="http://www.thymeleaf.org" lang="eng">
 <head>
     <title>Derman Üýtgetmek</title>
+    <link rel="stylesheet" type="text/css" th:href="@{/css/navbar.css}">
     <link rel="stylesheet" type="text/css" th:href="@{/css/styles.css}">
 </head>
 <body>
+<div class="navbar">
+    <div class="logo">BD</div>
+    <ul>
+        <li><a th:href="@{/}">Baş sahypa</a></li>
+        <li><a th:href="@{/drug-models}">Dermanlar</a></li>
+        <li><a th:href="@{/contracts}">Ýükler</a></li>
+    </ul>
+</div>
 <h1>Derman Üýtgetmek</h1>
 
 <form th:action="@{/drugs/update/{id}(id=${drug.id}, contractId=${contractId})}" th:object="${drug}" method="post">
-    <label>Ady: <input type="text" th:field="*{name}" /></label><br>
+   <table>
+       <thead>
+           <tr></tr>
+           <tr></tr>
+       </thead>
+       <tbody>
+           <tr><p>Ady</p></tr>
+           <tr><input style="margin:5px;" type="text" th:field="*{name}" /></tr>
+
+       </tbody>
+
+   </table>
+
+    <label>Ady: <input type="text" th:field="*{name}" /><br></label>
     <label>Производитель: <input type="text" th:field="*{firma}" /></label><br>
+    <label>Gelen ýeri: <input type="text" th:field="*{fromWhere}" /></label><br>
     <label>Mukdary: <input type="number" th:field="*{quantity}" /></label><br>
+    <label>Kontrakt: <input type="text" th:field="*{contractNumber}" /></label><br>
+    <label>Lisenziýa: <input type="text" th:field="*{lisenceNumber}" /></label><br>
+    <label>Inwoise: <input type="text" th:field="*{invoiceNumber}" /></label><br>
+
     <!--    <label>Öndürilen senesi: <input type="date" th:field="*{productionDate}" /></label><br>-->
-    <label>Öndürilen senesi: <input type="date" th:value="${#temporals.format(drug.productionDate, 'yyyy-MM-dd')}" name="productionDate" /></label><br>
-    <label>Seriýa Nomer: <input type="text" th:field="*{seriesNumber}" /></label><br>
+    <label>Lisenziya tabşyryldy: <input type="date" th:value="${#temporals.format(drug.lisenceRequest, 'yyyy-MM-dd')}" name="lisenceRequest" /></label><br>
+    <label>Lisenziya alyndy: <input type="date" th:value="${#temporals.format(drug.lisenceResponse, 'yyyy-MM-dd')}" name="lisenceResponse" /></label><br>
+    <label>Birža tabşyryldy: <input type="date" th:value="${#temporals.format(drug.birzaRequest, 'yyyy-MM-dd')}" name="birzaRequest" /></label><br>
+    <label>Birža alyndy: <input type="date" th:value="${#temporals.format(drug.birzaResponse, 'yyyy-MM-dd')}" name="birzaResponse" /></label><br>
+    <label>TDS tabşyryldy: <input type="date" th:value="${#temporals.format(drug.tdsRequest, 'yyyy-MM-dd')}" name="tdsRequest" /></label><br>
+    <label>TDS alyndy: <input type="date" th:value="${#temporals.format(drug.tdsResponse, 'yyyy-MM-dd')}" name="tdsResponse" /></label><br>
+    <label>Gümrük tabşyryldy: <input type="date" th:value="${#temporals.format(drug.tomojniRequest, 'yyyy-MM-dd')}" name="tomojniRequest" /></label><br>
+    <label>Gümrük alyndy: <input type="date" th:value="${#temporals.format(drug.tomojniResponse, 'yyyy-MM-dd')}" name="tomojniResponse" /></label><br>
+
     <label>Bahasy: <input type="number" th:field="*{price}" step="0.01" /></label><br>
     <button type="submit">Üýtget</button>
 </form>

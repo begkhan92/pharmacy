@@ -31,10 +31,15 @@ public class DrugModelService {
         DrugModel existingDrugModel = getDrugById(id);
         existingDrugModel.setNameDose(updatedDrugModel.getNameDose());
         existingDrugModel.setFirma(updatedDrugModel.getFirma());
+        existingDrugModel.setUnit(updatedDrugModel.getUnit());
 
 
         drugModelRepository.save(existingDrugModel);
         return existingDrugModel;
+    }
+
+    public void deleteModelDrug(Long id) {
+        drugModelRepository.deleteById(id);
     }
 
     public Optional<DrugModel> getDrugModelById(Long id){

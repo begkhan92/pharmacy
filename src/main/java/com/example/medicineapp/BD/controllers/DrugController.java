@@ -32,11 +32,26 @@ public class DrugController {
             @RequestParam(required = false) Boolean isClosed,
             Model model
     ) {
-        List<Drug> drugs = drugService.filterDrugs(invoiceId,contractId, name, firma, isClosed, contractNumber);
+        List<Drug> drugs = drugService.filterDrugs(contractId, name, firma, isClosed, contractNumber);
+
         model.addAttribute("drugs", drugs);
         model.addAttribute("invoiceId", invoiceId);
         model.addAttribute("contractId", contractId);
         return "drug-list";
+    }
+
+    @GetMapping("/list-invoice-drugs")
+    public String listDrugsFromInvoice(
+            @RequestParam Long invoiceId,
+            @RequestParam(required = false) String name,
+            @RequestParam(required = false) String firma,
+            @RequestParam(required = false) Boolean isClosed,
+            Model model
+    ) {
+        List<DrugWithQuantityDTO> drugs = drugService.filterInvoiceDrugs(invoiceId, name, firma, isClosed);
+        model.addAttribute("drugs", drugs);
+        model.addAttribute("invoiceId", invoiceId);
+        return "list-invoice-drugs";
     }
 
 
@@ -98,6 +113,7 @@ public class DrugController {
 
     @PostMapping("/update/{id}")
     public String updateDrug(@PathVariable Long id, @ModelAttribute("drug") Drug updatedDrug, @RequestParam(required = false) Long contractId, @RequestParam(required = false) Long invoiceId) {
+
         Drug newDrug = drugService.updateDrug(id, updatedDrug);
         if(invoiceId != null)
             return "redirect:/drugs?invoiceId=" + invoiceId;

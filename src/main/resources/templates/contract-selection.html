@@ -211,49 +211,80 @@
                 drugs.forEach(drug => {
                     let item = document.createElement("div");
                     item.className = "item";
+                    item.draggable = true; // ✅ make draggable
                     item.id = "available-" + drug.id;
                     item.dataset.original = drug.quantity;
                     item.dataset.remaining = drug.quantity;
                     item.dataset.contractId = contractId;
                     item.dataset.contractName = "Kontrakt №" + contractId;
-                    item.style.cursor = "pointer";
+                    item.dataset.name = drug.name;
+                    item.dataset.firma = drug.firma;
                     item.innerText = `${drug.name} / ${drug.firma} - ${drug.quantity} sany`;
 
-                    item.onclick = () => {
-                        let remaining = parseInt(item.dataset.remaining);
-                        if (remaining > 0) {
-                            const inputQty = prompt(`Girizmeli mukdary (galan: ${remaining}):`, "1");
-                            const qty = parseInt(inputQty);
-                            if (!isNaN(qty) && qty > 0 && qty <= remaining) {
-                                item.dataset.remaining = remaining - qty;
-                                updateAvailabilityText(item, drug);
-
-                                const selectedItem = document.createElement("div");
-                                selectedItem.className = "item";
-                                selectedItem.id = "drug-" + drug.id + "-" + Date.now();
-                                selectedItem.dataset.id = drug.id;
-                                selectedItem.dataset.contractId = contractId;
-                                selectedItem.dataset.contractName = "Kontrakt №" + contractId;
-
-                                selectedItem.innerHTML = `
-                                    <span>${drug.name} / ${drug.firma}</span>
-                                    <input type="number" class="qty-input" min="0" max="${qty}" value="${qty}" style="width: 50px; margin-left: 10px;" onchange="updateRemainingFromInput(this, ${drug.id})">
-                                    <button class='delete-btn' onclick='deleteItem(this, ${drug.id})'>X</button>
-                                `;
-
-                                document.getElementById("dropzone").appendChild(selectedItem);
-
-                                if (remaining - qty <= 0) item.style.display = "none";
-
-                                validateSelection();
-                            }
-                        }
-                    };
+                    // ✅ Drag start event
+                    item.addEventListener("dragstart", (e) => {
+                        e.dataTransfer.setData("text/plain", JSON.stringify({
+                            id: drug.id,
+                            name: drug.name,
+                            firma: drug.firma,
+                            contractId: contractId,
+                            contractName: "Kontrakt №" + contractId,
+                            original: drug.quantity
+                        }));
+                    });
 
                     contractDrugsBox.appendChild(item);
                 });
             });
     }
+
+    // ✅ Setup dropzone to allow drops
+    const dropzone = document.getElementById("dropzone");
+
+    dropzone.addEventListener("dragover", (e) => {
+        e.preventDefault(); // Allow drop
+        dropzone.style.background = "#e9f7ef";
+    });
+
+    dropzone.addEventListener("dragleave", () => {
+        dropzone.style.background = "white";
+    });
+
+    dropzone.addEventListener("drop", (e) => {
+        e.preventDefault();
+        dropzone.style.background = "white";
+
+        const data = JSON.parse(e.dataTransfer.getData("text/plain"));
+        const contractItem = document.getElementById(`available-${data.id}`);
+        const remaining = parseInt(contractItem.dataset.remaining);
+
+        if (remaining > 0) {
+            const qty = parseInt(prompt(`Girizmeli mukdary (galan: ${remaining}):`, "1"));
+            if (!isNaN(qty) && qty > 0 && qty <= remaining) {
+                contractItem.dataset.remaining = remaining - qty;
+                updateAvailabilityText(contractItem, data);
+
+                const selectedItem = document.createElement("div");
+                selectedItem.className = "item";
+                selectedItem.id = "drug-" + data.id + "-" + Date.now();
+                selectedItem.dataset.id = data.id;
+                selectedItem.dataset.contractId = data.contractId;
+
+                selectedItem.innerHTML = `
+                    <span>${data.name} / ${data.firma}</span>
+                    <input type="number" class="qty-input" min="0" max="${qty}" value="${qty}"
+                        style="width: 50px; margin-left: 10px;"
+                        onchange="updateRemainingFromInput(this, ${data.id})">
+                    <button class='delete-btn' onclick='deleteItem(this, ${data.id})'>X</button>
+                `;
+
+                dropzone.appendChild(selectedItem);
+
+                if (remaining - qty <= 0) contractItem.style.display = "none";
+                validateSelection();
+            }
+        }
+    });
 
     function updateAvailabilityText(item, drug) {
         const remaining = parseInt(item.dataset.remaining);
@@ -291,8 +322,8 @@
 
             updateAvailabilityText(contractItem, {
                 id: drugId,
-                name: contractItem.innerText.split(" / ")[0],
-                firma: contractItem.innerText.split(" / ")[1]?.split(" - ")[0]
+                name: contractItem.dataset.name,
+                firma: contractItem.dataset.firma
             });
         }
 
@@ -340,8 +371,6 @@
                 item.style.backgroundColor = "var(--selected-drug-color)";
             }
         });
-
-<!--        document.querySelector(".add-drug-btn").disabled = !valid;-->
     }
 
     function submitSelection() {
@@ -358,9 +387,7 @@
 
         fetch('/invoices/submit', {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(selectedDrugs)
         }).then(response => {
             if (response.redirected) {
@@ -371,6 +398,7 @@
         });
     }
 </script>
+
 
 
 </body>

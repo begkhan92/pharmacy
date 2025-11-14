@@ -97,7 +97,7 @@
         <td th:text="${iterStat.count}"></td> <!-- Display row number -->
         <!--    <td th:text="${invoice.invoiceDate}"></td>-->
         <td>
-            <a href="#" th:text="${invoice.invoiceDate}"></a>
+            <a th:href="@{/drugs/list-invoice-drugs(invoiceId=${invoice.id})}" th:text="${invoice.invoiceDate}"></a>
             <!--                  th:href="@{/drugs(cargoId=${cargo.id})}"-->
 
         </td>

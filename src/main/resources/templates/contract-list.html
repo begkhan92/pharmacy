@@ -10,11 +10,12 @@
   <div class="logo">BD</div>
   <ul>
     <li><a th:href="@{/}">Baş sahypa</a></li>
-    <li><a th:href="@{/cargos}">Ýükler</a></li>
     <li><a th:href="@{/drug-models}">Dermanlar</a></li>
-    <li><a th:href="@{/contracts}">Kontraktlar</a></li>
+    <li><a th:href="@{/contracts}">Ýükler</a></li>
   </ul>
 </div>
+
+
 <style>
   .action-container {
       position: relative;
@@ -56,68 +57,63 @@
   }
 </style>
 
-<!--<form th:action="@{/cargo}" method="get">-->
+<form style="margin-top:20px" th:action="@{/contracts}" method="get">
 
 
-<!--  <label>Ýyl:-->
-<!--    <input type="number" name="year" th:value="${year}" style="width: 75px;" />-->
-<!--  </label>-->
+  <label>Ýyl:
+    <input type="number" name="year" th:value="${year}" style="width: 50px;" />
+  </label>
 
-<!--  <label>Aýy:-->
-<!--    <select name="month">-->
-<!--      <option value="" th:selected="${month == null}">&#45;&#45; Aý saýla &#45;&#45;</option>-->
-<!--      <option th:each="entry : ${months.entrySet()}"-->
-<!--              th:value="${entry.key}"-->
-<!--              th:text="${entry.value}"-->
-<!--              th:selected="${entry.key == month}">-->
-<!--      </option>-->
-<!--    </select>-->
-<!--  </label>-->
-
-
+  <label>Aýy:
+    <select name="month">
+      <option value="" th:selected="${month == null}">-- Aý saýla --</option>
+      <option th:each="entry : ${months.entrySet()}"
+              th:value="${entry.key}"
+              th:text="${entry.value}"
+              th:selected="${entry.key == month}">
+      </option>
+    </select>
+  </label>
 
 
-<!--  <button type="submit">Filter</button>-->
-<!--</form>-->
 
-<table style="margin-top:70px">
+
+  <button type="submit">Filter</button>
+</form>
+
+<table>
   <thead>
   <tr>
     <th>№</th>
-    <th>Nomer</th>
-    <th>Başlady</th>
-    <th>Gutarýar</th>
-    <th>Imp</th>
-    <th>Lisenziýa</th>
-    <th>Birža sene</th>
+    <th>Akt Nomer</th>
+    <th>Gelen senesi</th>
+    <th>Maşynlaryň sany</th>
     <th>&#8942;</th>
 
   </tr>
   </thead>
   <tbody>
-  <tr th:each="contract, iterStat : ${contracts}">
-    <td th:text="${iterStat.count}"></td>
+  <tr th:each="contract, iterStat : ${contracts}"
+      th:classappend="${contract.closed != true ? ' not-closed' : ''}">    <td th:text="${iterStat.count}"></td>
 
     <td>
-      <a th:href="@{/drugs(contractId=${contract.id})}" th:text="${contract.number}"></a>
+      <a th:href="@{/drugs(contractId=${contract.id})}" th:text="${contract.actNumber}"></a>
     </td>
 
 
-    <td th:text="${contract.startDate}"></td>
+    <td th:text="${#temporals.format(contract.arrivedAt, 'dd.MM.yyyy')}"></td>
 
-    <td th:text="${contract.expireDate}"></td>
-    <td th:text="${contract.impNumber}"></td>
-    <td th:text="${contract.licenceNumber}"></td>
-    <td th:text="${contract.birzaDate}"></td>
+    <td th:text="${contract.numberOfCars}"></td>
+
     <td>
       <div class="action-container">
         <span class="menu-icon" th:attr="onclick=|toggleMenu(event, '${contract.id}')|">&#8942;</span>
         <div th:id="'menu-' + ${contract.id}" class="dropdown-menu">
           <a th:href="@{/contracts/edit/{id}(id=${contract.id})}">Üýtget</a>
           <br>
-          <!--          <a th:href="@{/drugs/delete/{id}(id=${drug.id})}" onclick="return confirm('Siz hakykatdanam pozmak isleýärsiňizmi?');">-->
-          <!--            Poz-->
-          <!--          </a>-->
+          <a th:href="@{/contracts/delete/{id}(id=${contract.id}, contractId=${contractId})}" onclick="return confirm('Siz hakykatdanam pozmak isleýärsiňizmi?');">
+            Poz
+          </a>
         </div>
       </div>
     </td>
@@ -125,7 +121,7 @@
   </tbody>
 </table>
 
-<a th:href="@{/contracts/add-drugs}" class="add-drug-btn">Kontrakt goşmak</a>
+<a th:href="@{/contracts/add-drugs}" class="add-drug-btn">Ýük goşmak</a>
 
 
 <script>

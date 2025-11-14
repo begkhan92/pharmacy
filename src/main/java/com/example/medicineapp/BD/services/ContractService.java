@@ -5,7 +5,11 @@ import com.example.medicineapp.BD.models.Contract;
 import com.example.medicineapp.BD.models.Drug;
 import com.example.medicineapp.BD.models.DrugModel;
 import com.example.medicineapp.BD.repositories.ContractRepository;
+import com.example.medicineapp.BD.specifications.CargoSpecification;
+import com.example.medicineapp.BD.specifications.ContractSpecifications;
+import com.example.medicineapp.BD.specifications.DrugSpecifications;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -33,7 +37,13 @@ public class ContractService {
                 .orElse(Collections.emptyList());
     }
 
+    public List<Contract> filterContracts(Integer year, Integer month) {
 
+        Specification<Contract> spec = Specification
+                .where(ContractSpecifications.hasDateArrivedInYearAndMonth(year, month));
+
+        return contractRepository.findAll(spec);
+    }
 
     public Contract findById(Long id) {
         return contractRepository.findById(id)
@@ -51,16 +61,17 @@ public class ContractService {
     public Contract updateContract(Long id, Contract updatedContract) {
         Contract existingContract = findById(id);
 //        existingContract.setName(updatedDrug.getName());
-        existingContract.setNumber(updatedContract.getNumber());
-        existingContract.setStartDate(updatedContract.getStartDate());
-        existingContract.setExpireDate(updatedContract.getExpireDate());
-        existingContract.setLicenceNumber(updatedContract.getLicenceNumber());
-        existingContract.setImpNumber(updatedContract.getImpNumber());
-        existingContract.setBirzaDate(updatedContract.getBirzaDate());
+        existingContract.setActNumber(updatedContract.getActNumber());
+        existingContract.setArrivedAt(updatedContract.getArrivedAt());
+        existingContract.setNumberOfCars(updatedContract.getNumberOfCars());
 
 
         contractRepository.save(existingContract);
         return existingContract;
+    }
+
+    public void deleteContract(Long id) {
+        contractRepository.deleteById(id);
     }
 
 }

@@ -3,12 +3,22 @@
 <head>
   <title>Derman goşmak</title>
   <link rel="stylesheet" type="text/css" th:href="@{/css/styles.css}">
+  <link rel="stylesheet" type="text/css" th:href="@{/css/navbar.css}">
 </head>
 <body>
+<div class="navbar">
+  <div class="logo">BD</div>
+  <ul>
+    <li><a th:href="@{/}">Baş sahypa</a></li>
+    <li><a th:href="@{/drug-models}">Dermanlar</a></li>
+    <li><a th:href="@{/contracts}">Ýükler</a></li>
+  </ul>
+</div>
 <h1>Derman Goşmak</h1>
 <form th:action="@{/drug-models/save}" th:object="${drugModel}" method="post">
-  <label>Ady, Dozasy: <input type="text" th:field="*{nameDose}" /></label><br>
+  <label>Ady: <input type="text" th:field="*{nameDose}" /></label><br>
   <label>Производитель: <input type="text" th:field="*{firma}" /></label><br>
+  <label>Единица: <input type="text" th:field="*{unit}" /></label><br>
 
   <button type="submit">Ok</button>
 </form>

@@ -12,8 +12,9 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.view.RedirectView;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Controller
@@ -33,8 +34,31 @@ public class ContractController {
         this.drugService = drugService;
     }
     @GetMapping
-    public String listContracts(Model model){
-        List<Contract> contracts = contractService.getAllContract();
+public String listContracts(
+            @RequestParam(required = false) Integer month,@RequestParam(required = false) Integer year,
+                            Model model
+    ){
+        if (year == null) year = LocalDate.now().getYear();
+        if(month == null) month = LocalDate.now().getMonthValue();
+
+        Map<Integer, String> months = new LinkedHashMap<>();
+        months.put(1, "Ýanwar");
+        months.put(2, "Fewral");
+        months.put(3, "Mart");
+        months.put(4, "Aprel");
+        months.put(5, "Maý");
+        months.put(6, "Iýun");
+        months.put(7, "Iýul");
+        months.put(8, "Awgust");
+        months.put(9, "Sentýabr");
+        months.put(10, "Oktýabr");
+        months.put(11, "Noýabr");
+        months.put(12, "Dekabr");
+
+        List<Contract> contracts = contractService.filterContracts(year, month);
+        model.addAttribute("year", year);
+        model.addAttribute("month", month);
+        model.addAttribute("months", months);
         model.addAttribute("contracts", contracts);
         return "contract-list";
     }
@@ -111,52 +135,60 @@ public class ContractController {
     public String showAddContractForm(Model model) {
         model.addAttribute("contract", new Contract());
 
+        List<DrugModel> selectedDrugs = contractService.getSelectedDrugs();
+        model.addAttribute("selectedDrugs", selectedDrugs);
+
         System.out.println(contractService.getSelectedDrugs().size());
         return "add-contract";
     }
 
     @PostMapping("/save")
-    public String saveContract(@ModelAttribute("contract") Contract contract) {
+    public String saveContract(
+            @ModelAttribute("contract") Contract contract,
+            @RequestParam List<Long> drugModelIds,
+            @RequestParam List<Integer> quantities,
+            @RequestParam List<BigDecimal> priceList
+    ) {
+        List<DrugModel> selectedDrugModels = drugModelRepository.findAllById(drugModelIds);
 
-        List<DrugModel> selectedDrugModels = contractService.getSelectedDrugs();
+        for (int i = 0; i < selectedDrugModels.size(); i++) {
+            DrugModel drugModel = selectedDrugModels.get(i);
+            Integer quantity = quantities.get(i);
 
+            Drug drug = new Drug();
+            drug.setContract(contract);
+            drug.setName(drugModel.getNameDose());
+            drug.setFirma(drugModel.getFirma());
+            drug.setQuantity(quantity);
+            drug.setContract(contract);
+            drug.setPrice(priceList.get(i));
 
-        for (DrugModel drugModel : selectedDrugModels) {
-            boolean alreadyExists = contract.getDrugs().stream().anyMatch(drug ->
-                    drug.getName().equals(drugModel.getNameDose()) &&
-                            drug.getFirma().equals(drugModel.getFirma())
-            );
-
-            if (!alreadyExists) {
-                Drug drug = new Drug();
-                drug.setName(drugModel.getNameDose());
-                drug.setFirma(drugModel.getFirma());
-                drug.setContract(contract); // Optional, depending on cascade setup
-                contract.addDrug(drug);     // ✅ Keep bidirectional link
-            }
+            contract.addDrug(drug);
         }
+
         contractService.saveContract(contract);
         return "redirect:/contracts";
     }
+
     @GetMapping("/edit/{contractId}")
     public String showEditDrugForm(@PathVariable Long contractId, Model model) {
         List<DrugModel> selectedDrugModels = contractService.getSelectedDrugs();
         Contract contract = contractService.findById(contractId);
         System.out.println(selectedDrugModels.size());
-        for (DrugModel drugModel : selectedDrugModels) {
-            boolean alreadyExists = contract.getDrugs().stream().anyMatch(drug ->
-                    drug.getName().equals(drugModel.getNameDose()) &&
-                            drug.getFirma().equals(drugModel.getFirma())
-            );
-
-            if (!alreadyExists) {
-                Drug drug = new Drug();
-                drug.setName(drugModel.getNameDose());
-                drug.setFirma(drugModel.getFirma());
-                contract.addDrug(drug);
-                drugRepository.save(drug);
-            }
-        }
+//        for (DrugModel drugModel : selectedDrugModels) {
+//            boolean alreadyExists = contract.getDrugs().stream().anyMatch(drug ->
+//                    drug.getName().equals(drugModel.getNameDose()) &&
+//                            drug.getFirma().equals(drugModel.getFirma())
+//            );
+//
+//            if (!alreadyExists) {
+//                Drug drug = new Drug();
+//                drug.setName(drugModel.getNameDose());
+//                drug.setFirma(drugModel.getFirma());
+//                contract.addDrug(drug);
+//                drugRepository.save(drug);
+//            }
+//        }
         System.out.println("drugs in contract - " + contract.getDrugs().size());
         model.addAttribute("contract", contract);
         model.addAttribute("contractId", contractId);
@@ -167,6 +199,12 @@ public class ContractController {
     @PostMapping("/update/{id}")
     public String updateContract(@PathVariable Long id, @ModelAttribute("contract") Contract updatedContract) {
         Contract newContract = contractService.updateContract(id, updatedContract);
+        return "redirect:/contracts";
+    }
+
+    @GetMapping("/delete/{id}")
+    public String deleteDrug(@PathVariable Long id, @RequestParam(required = false) Long contractId) {
+        contractService.deleteContract(id);
         return "redirect:/contracts";
     }
 

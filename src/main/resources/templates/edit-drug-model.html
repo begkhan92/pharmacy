@@ -10,6 +10,7 @@
 <form th:action="@{/drug-models/update/{id}(id=${drugModel.id})}" th:object="${drugModel}" method="post">
   <label>Ady: <input type="text" th:field="*{nameDose}" /></label><br>
   <label>Производитель: <input type="text" th:field="*{firma}" /></label><br>
+  <label>Единица: <input type="text" th:field="*{unit}" /></label><br>
   <button type="submit">Üýtget</button>
 </form>
 

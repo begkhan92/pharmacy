@@ -3,6 +3,8 @@ package com.example.medicineapp.BD.specifications;
 import com.example.medicineapp.BD.models.Drug;
 import org.springframework.data.jpa.domain.Specification;
 
+import java.util.List;
+
 public class DrugSpecifications {
 
     public static Specification<Drug> hasName(String name) {
@@ -10,6 +12,15 @@ public class DrugSpecifications {
                 name == null || name.isEmpty() ?
                         criteriaBuilder.conjunction() :
                         criteriaBuilder.like(root.get("name"), "%" + name + "%");
+    }
+
+    public static Specification<Drug> hasIdIn(List<Long> ids) {
+        return (root, query, cb) -> {
+            if (ids == null || ids.isEmpty()) {
+                return cb.conjunction(); // No filtering if list is null or empty
+            }
+            return root.get("id").in(ids);
+        };
     }
 
     public static Specification<Drug> hasInvoiceId(Long invoiceId) {
@@ -41,7 +52,7 @@ public class DrugSpecifications {
         return (root, query, criteriaBuilder) ->
                 isClosed == null ?
                         criteriaBuilder.conjunction() :
-                        criteriaBuilder.equal(root.get("isClosed"), isClosed);
+                        criteriaBuilder.equal(root.get("closed"), isClosed);
     }
 }
 

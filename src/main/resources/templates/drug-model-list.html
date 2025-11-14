@@ -85,9 +85,8 @@
   <div class="logo">BD</div>
   <ul>
     <li><a th:href="@{/}">Baş sahypa</a></li>
-    <li><a th:href="@{/cargo}">Ýükler</a></li>
     <li><a th:href="@{/drug-models}">Dermanlar</a></li>
-    <li><a th:href="@{/contract}">Kontraktlar</a></li>
+    <li><a th:href="@{/contracts}">Ýükler</a></li>
   </ul>
 </div>
 
@@ -97,21 +96,23 @@
     <th>№</th>
     <th>Ady</th>
     <th>Производитель</th>
+    <th>Единица</th>
     <th>&#8942;</th>
   </tr>
   </thead>
   <tbody>
   <tr th:each="drugModel, iterStat : ${drugModels}">
     <td th:text="${iterStat.count}"></td>
-    <td th:text="${drugModel.nameDose}"></td>
+    <td style="text-align: left;" th:text="${drugModel.nameDose}"></td>
     <td th:text="${drugModel.firma}"></td>
+    <td th:text="${drugModel.unit}"></td>
     <td>
       <div class="action-container">
         <span class="menu-icon" th:attr="onclick=|toggleMenu(event, '${drugModel.id}')|">&#8942;</span>
         <div th:id="'menu-' + ${drugModel.id}" class="dropdown-menu">
           <a th:href="@{/drug-models/edit/{id}(id=${drugModel.id})}">Üýtget</a>
           <br>
-          <a th:href="@{/drugs/delete/{id}(id=${drugModel.id})}" onclick="return confirm('Siz hakykatdanam pozmak isleýärsiňizmi?');">
+          <a th:href="@{/drug-models/delete/{id}(id=${drugModel.id})}" onclick="return confirm('Siz hakykatdanam pozmak isleýärsiňizmi?');">
             Poz
           </a>
         </div>
